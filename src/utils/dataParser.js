@@ -11,7 +11,7 @@ import rawData from "../data/expensesRaw.json";
  */
 export async function loadExpensesWorkbook() {
   try {
-    const response = await fetch(process.env.PUBLIC_URL + "/assets/DzalinoData.xlsx");
+    const response = await fetch(process.env.PUBLIC_URL + "/assets/full_expenses.xlsx");
     if (response.ok) {
       const buffer = await response.arrayBuffer();
       const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
