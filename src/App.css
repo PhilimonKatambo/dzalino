@@ -226,8 +226,8 @@ a {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: clamp(20px, 4vw, 56px);
+  gap: 5px;
+  padding: clamp(5px, 1vw, 10px);
 }
 
 .state-card {
@@ -362,14 +362,15 @@ a {
    KPI cards
    ========================================================================== */
 .kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 16px;
+  display: flex;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  gap: 5px;
 }
 
 .kpi-card {
   background: var(--surface);
-  border-radius: 22px;
+  border-radius: 5px;
   padding: 22px;
   box-shadow: var(--shadow);
   display: flex;
@@ -378,6 +379,7 @@ a {
   border: 1px solid var(--border);
   position: relative;
   overflow: hidden;
+  min-width: 200px;
 }
 
 .kpi-card::after {
@@ -422,12 +424,12 @@ a {
 .chart-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 18px;
+  gap: 5px;
 }
 
 .panel {
   background: var(--surface);
-  border-radius: 22px;
+  border-radius: 5px;
   padding: 24px;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
@@ -569,7 +571,7 @@ a {
    ========================================================================== */
 .table-card {
   background: var(--surface);
-  border-radius: 22px;
+  border-radius: 5px;
   padding: 24px;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);

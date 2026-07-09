@@ -218,7 +218,7 @@ export default function Dashboard() {
 
   return (
     <main className="dashboard" id="analytics">
-      <section className="hero">
+      {/* <section className="hero">
         <div className="hero-copy">
           <span className="hero-tag">Dzalino analytics</span>
           <h1>Expense insights, trends and meaning</h1>
@@ -249,7 +249,7 @@ export default function Dashboard() {
             <small>Distinct cost centres</small>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <KpiCards kpis={kpis} />
 
