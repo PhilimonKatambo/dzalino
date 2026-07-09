@@ -28,14 +28,9 @@ export default function Insights({ insights, topItems }) {
               <li key={item.description}>
                 <div>
                   <strong>{item.description}</strong>
-                  <span className="muted">
-                    {" "}
-                    Â· {item.count}Ã— Â· {item.category}
-                  </span>
+                  <span className="muted"> · {item.count}× · {item.category}</span>
                 </div>
-                <span className="amount">
-                  K{item.total.toLocaleString("en-US")}
-                </span>
+                <span className="amount">K{item.total.toLocaleString("en-US")}</span>
               </li>
             ))}
           </ol>

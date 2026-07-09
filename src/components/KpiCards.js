@@ -1,5 +1,4 @@
 import React from "react";
-import { formatKwacha } from "../utils/dataParser";
 
 const ACCENTS = [
   "var(--chart-1)",
@@ -27,12 +26,8 @@ export default function KpiCards({ kpis }) {
           >
             {kpi.label}
           </span>
-          <strong className="kpi-value">
-            {kpi.formatted ?? formatKwacha(kpi.value)}
-          </strong>
-          {kpi.subtitle ? (
-            <span className="kpi-subtitle">{kpi.subtitle}</span>
-          ) : null}
+          <strong className="kpi-value">{kpi.formatted}</strong>
+          {kpi.subtitle ? <span className="kpi-subtitle">{kpi.subtitle}</span> : null}
         </article>
       ))}
     </div>

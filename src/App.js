@@ -27,7 +27,7 @@ function App() {
       <Dashboard />
       <footer className="app-footer" id="about">
         <span>Source: <code>/assets/DzalinoData.xlsx</code></span>
-        <span>Built with React + Redux Â· {new Date().getFullYear()}</span>
+        <span>Built with React + Redux · {new Date().getFullYear()}</span>
       </footer>
     </div>
   );

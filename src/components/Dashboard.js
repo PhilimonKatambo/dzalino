@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import KpiCards from "./KpiCards";
 import Insights from "./Insights";
 import ExpenseTable from "./ExpenseTable";
@@ -8,28 +8,141 @@ import {
   CategoryShareStackedChart,
   DailySpendChart,
   MonthlyTrendChart,
-} from "./Charts";
-import {
-  averageSpend,
-  buildInsights,
-  byCategory,
-  dailySpendSeries,
-  maxSpend,
-  medianSpend,
-  minSpend,
-  byMonth,
-  topItems,
-  totalsByCategoryAndMonth,
-  totalSpend,
-  uniqueCategories,
-  uniqueDays,
-} from "../utils/analytics";
-import {
-  formatKwacha,
-  formatMonthYear,
-  loadExpensesWorkbook,
-  parseExpenseRows,
-} from "../utils/dataParser";
+} from "./charts";
+import { loadExpensesWorkbook, parseExpenseRows } from "../utils/dataParser";
+
+function buildSummary(records) {
+  if (records.length === 0) return null;
+  let total = 0;
+  const totals = [];
+  const monthSet = new Map();
+  const daySet = new Set();
+  const categorySet = new Set();
+  records.forEach((r) => {
+    total += r.total;
+    totals.push(r.total);
+    if (r.date) {
+      daySet.add(r.date.toDateString());
+      const y = r.date.getFullYear();
+      const m = String(r.date.getMonth() + 1).padStart(2, "0");
+      const key = `${y}-${m}`;
+      const entry = monthSet.get(key) || { date: r.date, total: 0 };
+      entry.total += r.total;
+      monthSet.set(key, entry);
+    }
+    categorySet.add(r.category);
+  });
+
+  const months = Array.from(monthSet.values()).sort((a, b) => a.date - b.date);
+  const first = months[0]?.date;
+  const last = months[months.length - 1]?.date;
+  const sorted = [...totals].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const median = sorted.length === 0
+    ? 0
+    : sorted.length % 2 === 0
+    ? (sorted[mid - 1] + sorted[mid]) / 2
+    : sorted[mid];
+  const max = totals.reduce((m, v) => (v > m ? v : m), 0);
+  const min = totals.reduce((m, v) => (v < m ? v : m), totals[0] || 0);
+  const avg = totals.length === 0 ? 0 : total / totals.length;
+
+  return {
+    total,
+    count: records.length,
+    avg,
+    median,
+    max,
+    min,
+    days: daySet.size,
+    categories: categorySet.size,
+    first,
+    last,
+  };
+}
+
+function buildInsights(records) {
+  if (records.length === 0) return [];
+  const insights = [];
+
+  const categoryMap = new Map();
+  records.forEach((r) => {
+    const entry = categoryMap.get(r.category) || { category: r.category, total: 0, count: 0 };
+    entry.total += r.total;
+    entry.count += 1;
+    categoryMap.set(r.category, entry);
+  });
+  const catTotals = Array.from(categoryMap.values()).sort((a, b) => b.total - a.total);
+  const totalAll = records.reduce((sum, r) => sum + r.total, 0);
+  if (catTotals.length > 0) {
+    const top = catTotals[0];
+    const share = (top.total / totalAll) * 100;
+    insights.push({
+      title: `${top.category} dominates spend`,
+      detail: `K${top.total.toLocaleString("en-US")} (${share.toFixed(1)}% of total) across ${top.count} transactions.`,
+    });
+  }
+
+  const monthMap = new Map();
+  records.forEach((r) => {
+    if (!r.date) return;
+    const y = r.date.getFullYear();
+    const m = String(r.date.getMonth() + 1).padStart(2, "0");
+    const key = `${y}-${m}`;
+    const entry = monthMap.get(key) || { date: r.date, total: 0 };
+    entry.total += r.total;
+    monthMap.set(key, entry);
+  });
+  const months = Array.from(monthMap.values()).sort((a, b) => a.date - b.date);
+  if (months.length >= 2) {
+    const last = months[months.length - 1];
+    const prev = months[months.length - 2];
+    const delta = last.total - prev.total;
+    const pct = prev.total === 0 ? null : (delta / prev.total) * 100;
+    const direction = delta >= 0 ? "up" : "down";
+    insights.push({
+      title: `Monthly trend is ${direction}`,
+      detail: `K${last.total.toLocaleString("en-US")} vs K${prev.total.toLocaleString("en-US")} (${pct == null ? "n/a" : `${pct.toFixed(1)}%`}).`,
+    });
+  }
+
+  const itemMap = new Map();
+  records.forEach((r) => {
+    const key = r.description.toLowerCase();
+    const entry = itemMap.get(key) || { description: r.description, total: 0, count: 0, category: r.category };
+    entry.total += r.total;
+    entry.count += 1;
+    itemMap.set(key, entry);
+  });
+  const topItem = Array.from(itemMap.values()).sort((a, b) => b.total - a.total)[0];
+  if (topItem) {
+    insights.push({
+      title: `Top item: ${topItem.description}`,
+      detail: `K${topItem.total.toLocaleString("en-US")} across ${topItem.count} transaction(s) in category ${topItem.category}.`,
+    });
+  }
+
+  insights.push({
+    title: "Average ticket size",
+    detail: `K${Math.round(totalAll / records.length).toLocaleString("en-US")} per expense across ${records.length} entries.`,
+  });
+
+  return insights;
+}
+
+function buildTopItems(records, limit = 5) {
+  const map = new Map();
+  records.forEach((r) => {
+    const key = r.description.toLowerCase();
+    const entry = map.get(key) || { description: r.description, total: 0, count: 0, category: r.category };
+    entry.total += r.total;
+    entry.count += 1;
+    map.set(key, entry);
+  });
+  return Array.from(map.values())
+    .sort((a, b) => b.total - a.total)
+    .slice(0, limit);
+}
 
 export default function Dashboard() {
   const [records, setRecords] = useState([]);
@@ -53,37 +166,8 @@ export default function Dashboard() {
     };
   }, []);
 
-  const summary = useMemo(() => {
-    if (records.length === 0) return null;
-    const total = totalSpend(records);
-    const months = byMonth(records);
-    const first = months[0]?.date;
-    const last = months[months.length - 1]?.date;
-    return {
-      total,
-      count: records.length,
-      avg: averageSpend(records),
-      median: medianSpend(records),
-      max: maxSpend(records),
-      min: minSpend(records),
-      days: uniqueDays(records),
-      categories: uniqueCategories(records),
-      first,
-      last,
-    };
-  }, [records]);
-
-  const categoryData = useMemo(() => byCategory(records), [records]);
-  const monthlyData = useMemo(
-    () => totalsByCategoryAndMonth(records, categoryData),
-    [records, categoryData]
-  );
-  const dailyData = useMemo(() => dailySpendSeries(records), [records]);
-  const topFive = useMemo(() => topItems(records, 5), [records]);
-  const insights = useMemo(() => buildInsights(records), [records]);
-
   if (status.loading) {
-    return <div className="state-card">Loading expense data…</div>;
+    return <div className="state-card">Loading expense data�</div>;
   }
   if (status.error) {
     return (
@@ -93,42 +177,41 @@ export default function Dashboard() {
       </div>
     );
   }
-  if (!summary) {
+  if (records.length === 0) {
     return <div className="state-card">No expense rows were found.</div>;
   }
+
+  const summary = buildSummary(records);
+  const insights = buildInsights(records);
+  const topFive = buildTopItems(records, 5);
 
   const kpis = [
     {
       label: "Total spend",
-      value: summary.total,
       formatted: `K${summary.total.toLocaleString("en-US")}`,
       subtitle: `${summary.count} transactions tracked`,
     },
     {
       label: "Average ticket",
-      value: summary.avg,
-      formatted: formatKwacha(summary.avg),
-      subtitle: `Median ${formatKwacha(summary.median)}`,
+      formatted: `K${Math.round(summary.avg).toLocaleString("en-US")}`,
+      subtitle: `Median K${Math.round(summary.median).toLocaleString("en-US")}`,
     },
     {
       label: "Largest expense",
-      value: summary.max,
-      formatted: formatKwacha(summary.max),
-      subtitle: `Smallest ${formatKwacha(summary.min)}`,
+      formatted: `K${Math.round(summary.max).toLocaleString("en-US")}`,
+      subtitle: `Smallest K${Math.round(summary.min).toLocaleString("en-US")}`,
     },
     {
       label: "Categories",
-      value: summary.categories,
       formatted: summary.categories.toString(),
       subtitle: `Active on ${summary.days} day${summary.days === 1 ? "" : "s"}`,
     },
     {
       label: "Coverage",
-      value: summary.last && summary.first ? summary.last - summary.first : 0,
       formatted:
         summary.first && summary.last
-          ? `${formatMonthYear(summary.first)} → ${formatMonthYear(summary.last)}`
-          : "—",
+          ? `${formatRangeLabel(summary.first)} ? ${formatRangeLabel(summary.last)}`
+          : "�",
       subtitle: "Period observed",
     },
   ];
@@ -156,8 +239,8 @@ export default function Dashboard() {
             <strong>{summary.days}</strong>
             <small>
               {summary.first && summary.last
-                ? `${formatMonthYear(summary.first)} – ${formatMonthYear(summary.last)}`
-                : "—"}
+                ? `${formatRangeLabel(summary.first)} � ${formatRangeLabel(summary.last)}`
+                : "�"}
             </small>
           </div>
           <div className="hero-stat">
@@ -176,35 +259,35 @@ export default function Dashboard() {
             <h3>Monthly spend trend</h3>
             <p>Per-category monthly totals with a bold total line on top.</p>
           </header>
-          <MonthlyTrendChart data={monthlyData} categories={categoryData} />
+          <MonthlyTrendChart records={records} />
         </div>
         <div className="panel">
           <header className="panel-header">
             <h3>Category share</h3>
             <p>Where every Kwacha went.</p>
           </header>
-          <CategoryDonut data={categoryData} />
+          <CategoryDonut records={records} />
         </div>
         <div className="panel">
           <header className="panel-header">
             <h3>Spend by category</h3>
             <p>Ranked totals per cost centre.</p>
           </header>
-          <CategoryBarChart data={categoryData} />
+          <CategoryBarChart records={records} />
         </div>
         <div className="panel span-2">
           <header className="panel-header">
             <h3>Stacked monthly composition</h3>
             <p>How the mix of categories evolves month over month.</p>
           </header>
-          <CategoryShareStackedChart data={monthlyData} categories={categoryData} />
+          <CategoryShareStackedChart records={records} />
         </div>
         <div className="panel span-2">
           <header className="panel-header">
             <h3>Daily burn rate</h3>
             <p>Spending pattern across the captured days.</p>
           </header>
-          <DailySpendChart data={dailyData} />
+          <DailySpendChart records={records} />
         </div>
       </section>
 
@@ -234,4 +317,10 @@ export default function Dashboard() {
       </section>
     </main>
   );
+}
+
+function formatRangeLabel(date) {
+  if (!date) return "�";
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${months[date.getMonth()]} ${date.getFullYear()}`;
 }

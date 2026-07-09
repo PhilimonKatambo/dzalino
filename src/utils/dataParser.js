@@ -1,14 +1,6 @@
 import * as XLSX from "xlsx";
 import rawData from "../data/expensesRaw.json";
 
-/**
- * Load the embedded xlsx workbook from /assets and return the raw
- * rows for the first worksheet. The dataset only has one sheet, but
- * we still use the first sheet name defensively. If the workbook
- * fetch fails (for example in environments where the binary asset is
- * not served) we fall back to the JSON mirror committed under
- * src/data/expensesRaw.json.
- */
 export async function loadExpensesWorkbook() {
   try {
     const response = await fetch(process.env.PUBLIC_URL + "/assets/full_expenses.xlsx");
@@ -24,25 +16,21 @@ export async function loadExpensesWorkbook() {
       });
     }
   } catch (err) {
-    // ignore - fall back to bundled JSON
   }
   return rawData;
 }
 
-/** Convert dd/mm/yyyy strings or Excel date serials to a Date object. */
-function parseDate(value) {
+export function parseDate(value) {
   if (value == null || value === "") return null;
   if (value instanceof Date) {
     return Number.isNaN(value.getTime()) ? null : value;
   }
   if (typeof value === "number") {
-    // Excel serial date (days since 1899-12-30)
     const epoch = new Date(Date.UTC(1899, 11, 30));
     const d = new Date(epoch.getTime() + value * 86400000);
     return Number.isNaN(d.getTime()) ? null : d;
   }
   const str = String(value).trim();
-  // dd/mm/yyyy
   const m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
   if (m) {
     const [, dd, mm, yy] = m;
@@ -76,11 +64,6 @@ function findColumn(headerRow, candidates) {
   return -1;
 }
 
-/**
- * Normalise the raw row array into a clean object. The source data uses
- * a header row at index 0 and 81 expense rows after that. Dates are
- * provided in dd/mm/yyyy format or Excel serials, so we coerce them.
- */
 export function parseExpenseRows(rows) {
   if (!rows || rows.length === 0) return [];
   const header = rows[0];
@@ -121,27 +104,17 @@ export function parseExpenseRows(rows) {
 }
 
 const MONTH_NAMES = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
 export function formatMonthYear(date) {
-  if (!date) return "â€”";
+  if (!date) return "—";
   return `${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 export function formatDate(date) {
-  if (!date) return "â€”";
+  if (!date) return "—";
   const dd = String(date.getDate()).padStart(2, "0");
   const mm = String(date.getMonth() + 1).padStart(2, "0");
   return `${dd}/${mm}/${date.getFullYear()}`;
@@ -149,11 +122,7 @@ export function formatDate(date) {
 
 export function formatKwacha(value) {
   if (!Number.isFinite(value)) return "K0";
-  if (Math.abs(value) >= 1_000_000) {
-    return `K${(value / 1_000_000).toFixed(2)}M`;
-  }
-  if (Math.abs(value) >= 1_000) {
-    return `K${(value / 1_000).toFixed(1)}k`;
-  }
+  if (Math.abs(value) >= 1_000_000) return `K${(value / 1_000_000).toFixed(2)}M`;
+  if (Math.abs(value) >= 1_000) return `K${(value / 1_000).toFixed(1)}k`;
   return `K${Math.round(value).toLocaleString("en-US")}`;
 }

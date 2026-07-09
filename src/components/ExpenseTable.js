@@ -18,9 +18,7 @@ export default function ExpenseTable({ records }) {
     const term = search.trim().toLowerCase();
     return records
       .filter((r) => (category === "All" ? true : r.category === category))
-      .filter((r) =>
-        term ? r.description.toLowerCase().includes(term) : true
-      )
+      .filter((r) => (term ? r.description.toLowerCase().includes(term) : true))
       .sort((a, b) => (b.date?.getTime?.() ?? 0) - (a.date?.getTime?.() ?? 0));
   }, [records, category, search]);
 
@@ -41,7 +39,7 @@ export default function ExpenseTable({ records }) {
         <div className="table-controls">
           <input
             type="search"
-            placeholder="Search descriptionâ€¦"
+            placeholder="Search description…"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -113,14 +111,14 @@ export default function ExpenseTable({ records }) {
             disabled={safePage === 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
           >
-            â€¹ Prev
+            ‹ Prev
           </button>
           <button
             type="button"
             disabled={safePage === totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           >
-            Next â€º
+            Next ›
           </button>
         </div>
       </footer>

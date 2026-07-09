@@ -8,12 +8,18 @@ function readInitialTheme() {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored === "light" || stored === "dark") return stored;
   } catch (err) {
-    // ignore storage errors (private mode, etc.)
   }
   if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
     return "dark";
   }
   return "light";
+}
+
+function persist(value) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, value);
+  } catch (err) {
+  }
 }
 
 const initialState = {
@@ -28,19 +34,11 @@ const themeSlice = createSlice({
       const next = action.payload;
       if (next !== "light" && next !== "dark") return;
       state.mode = next;
-      try {
-        window.localStorage.setItem(STORAGE_KEY, next);
-      } catch (err) {
-        // ignore
-      }
+      persist(next);
     },
     toggleTheme(state) {
       state.mode = state.mode === "light" ? "dark" : "light";
-      try {
-        window.localStorage.setItem(STORAGE_KEY, state.mode);
-      } catch (err) {
-        // ignore
-      }
+      persist(state.mode);
     },
   },
 });
