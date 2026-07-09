@@ -1,12 +1,3 @@
-import {
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-
 export const AXIS_PROPS = {
   stroke: "var(--text-muted)",
   tick: { fontSize: 12, fill: "var(--text-muted)" },
