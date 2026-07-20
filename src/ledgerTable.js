@@ -259,7 +259,7 @@ const parseDateSafe = (raw) => {
     if (typeof raw === "string") {
         const s = raw.trim();
         if (!s) return null;
-        const dmy = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/);
+        const dmy = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})/);
         if (dmy) {
             const day = Number(dmy[1]);
             const month = Number(dmy[2]);
