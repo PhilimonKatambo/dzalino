@@ -1,11 +1,7 @@
-
 import { useEffect, useMemo, useState } from "react";
 import "./allExpense.css";
 
 export const LEDGER_PAGE_SIZE = 12;
-
-// Re-export the page size so legacy imports keep working if anything else
-// reaches for it.
 export const PAGE_SIZE = LEDGER_PAGE_SIZE;
 
 const DEFAULT_SORT_OPTIONS = [
@@ -21,32 +17,15 @@ const DEFAULT_SORT_OPTIONS = [
     { value: "qty_asc", label: "Quantity - Lowest first" }
 ];
 
-// A column descriptor is:
-//   key       - the row field to read (or a custom render below)
-//   header    - table header text
-//   align     - "right" to apply the aeNum right-aligned cell class
-//   render    - optional (row) => ReactNode; overrides default formatting
-//   compare   - optional (a, b) => number used by the sort dropdown
-//   search    - if true the value is included in the text search
-//   numeric   - if true the cell content is formatted with toLocaleString
-//   badge     - if true the value is wrapped in the .aeBadge pill
-//   currency  - if true the cell is prefixed with "K" and locale formatted
-//   date      - if true the cell is rendered via formatDateCell
 const LedgerTable = ({
     rows,
     title,
     subtitle,
-    // which fields to include in the case-insensitive text search
     searchFields,
-    // which fields are "categories" for the dropdown filter ("All" + uniques)
     categoryField = "Category",
-    // column descriptors
     columns,
-    // extra bottom-line stats; each is { label, value (ReactNode) }
     summary = [],
-    // hide the category dropdown entirely when the table has no categories
     showCategoryFilter = true,
-    // optional fixed sort options (defaults to DEFAULT_SORT_OPTIONS)
     sortOptions = DEFAULT_SORT_OPTIONS
 }) => {
     const list = useMemo(
@@ -85,7 +64,7 @@ const LedgerTable = ({
                 return v != null && String(v).toLowerCase().includes(q);
             });
         });
-    }, [list, search, category, searchFields, showCategoryFilter]);
+    }, [list, search, category, searchFields, showCategoryFilter, categoryField]);
 
     const sorted = useMemo(() => {
         const out = filtered.slice();
@@ -114,12 +93,8 @@ const LedgerTable = ({
         <div id="allExpense" className="ledger">
             <div className="aeHeader">
                 <div className="aeTitle">{title}</div>
-                {subtitle != null && (
-                    <div className="aeSubtitle">{subtitle}</div>
-                )}
-                {headerSummary && (
-                    <div className="aeSubtitle">{headerSummary}</div>
-                )}
+                {subtitle != null && <div className="aeSubtitle">{subtitle}</div>}
+                {headerSummary && <div className="aeSubtitle">{headerSummary}</div>}
             </div>
 
             <div className="aeControls">
@@ -168,10 +143,7 @@ const LedgerTable = ({
                     <thead>
                         <tr>
                             {columns.map((col) => (
-                                <th
-                                    key={col.key}
-                                    className={col.align === "right" ? "aeNum" : undefined}
-                                >
+                                <th key={col.key} className={col.align === "right" ? "aeNum" : undefined}>
                                     {col.header}
                                 </th>
                             ))}
@@ -188,12 +160,7 @@ const LedgerTable = ({
                             pageRows.map((row, i) => (
                                 <tr key={row._id || `${pageStart}-${i}`}>
                                     {columns.map((col) => (
-                                        <td
-                                            key={col.key}
-                                            className={
-                                                col.align === "right" ? "aeNum" : undefined
-                                            }
-                                        >
+                                        <td key={col.key} className={col.align === "right" ? "aeNum" : undefined}>
                                             {renderCell(row, col)}
                                         </td>
                                     ))}
@@ -209,39 +176,11 @@ const LedgerTable = ({
                     Showing {pageRows.length === 0 ? 0 : pageStart + 1}-{pageStart + pageRows.length} of {sorted.length.toLocaleString()}
                 </div>
                 <div className="aePagerButtons">
-                    <button
-                        type="button"
-                        className="aeBtn"
-                        onClick={() => setPage(1)}
-                        disabled={safePage <= 1}
-                    >
-                        First
-                    </button>
-                    <button
-                        type="button"
-                        className="aeBtn"
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        disabled={safePage <= 1}
-                    >
-                        Prev
-                    </button>
+                    <button type="button" className="aeBtn" onClick={() => setPage(1)} disabled={safePage <= 1}>First</button>
+                    <button type="button" className="aeBtn" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={safePage <= 1}>Prev</button>
                     <span className="aePagerPage">Page {safePage} of {totalPages}</span>
-                    <button
-                        type="button"
-                        className="aeBtn"
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                        disabled={safePage >= totalPages}
-                    >
-                        Next
-                    </button>
-                    <button
-                        type="button"
-                        className="aeBtn"
-                        onClick={() => setPage(totalPages)}
-                        disabled={safePage >= totalPages}
-                    >
-                        Last
-                    </button>
+                    <button type="button" className="aeBtn" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={safePage >= totalPages}>Next</button>
+                    <button type="button" className="aeBtn" onClick={() => setPage(totalPages)} disabled={safePage >= totalPages}>Last</button>
                 </div>
             </div>
         </div>
@@ -249,8 +188,6 @@ const LedgerTable = ({
 };
 
 export default LedgerTable;
-
-// ---------- helpers ----------
 
 const renderCell = (row, col) => {
     if (typeof col.render === "function") {
@@ -272,7 +209,6 @@ const compareRows = (a, b, sortBy, columns) => {
     if (col && typeof col.compare === "function") {
         return col.compare(a, b);
     }
-    // Fall back to date desc, then amount desc, then string compare.
     if (sortBy === "date_asc" || sortBy === "date_desc") {
         const da = parseDateSafe(a.Date);
         const db = parseDateSafe(b.Date);
@@ -291,16 +227,12 @@ const compareRows = (a, b, sortBy, columns) => {
     if (sortBy === "category_asc" || sortBy === "category_desc") {
         const ca = String(a.Category || "");
         const cb = String(b.Category || "");
-        return sortBy === "category_asc"
-            ? ca.localeCompare(cb)
-            : cb.localeCompare(ca);
+        return sortBy === "category_asc" ? ca.localeCompare(cb) : cb.localeCompare(ca);
     }
     if (sortBy === "description_asc" || sortBy === "description_desc") {
         const na = String(a.Description || "");
         const nb = String(b.Description || "");
-        return sortBy === "description_asc"
-            ? na.localeCompare(nb)
-            : nb.localeCompare(na);
+        return sortBy === "description_asc" ? na.localeCompare(nb) : nb.localeCompare(na);
     }
     return 0;
 };
@@ -325,7 +257,7 @@ const parseDateSafe = (raw) => {
     if (typeof raw === "string") {
         const s = raw.trim();
         if (!s) return null;
-        const dmy = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/);
+        const dmy = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
         if (dmy) {
             const day = Number(dmy[1]);
             const month = Number(dmy[2]);
