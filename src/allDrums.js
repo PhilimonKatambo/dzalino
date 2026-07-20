@@ -1,4 +1,4 @@
-﻿// Ledger for the drums-given records.
+// Ledger for the drums-given records.
 
 import { useMemo } from "react";
 import { useSelector } from "react-redux";

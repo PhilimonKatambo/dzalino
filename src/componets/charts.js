@@ -1,4 +1,4 @@
-﻿// Combined "Expenses per Category Over Time" line chart and a daily total
+// Combined "Expenses per Category Over Time" line chart and a daily total
 // "Expenses per Day" bar chart. Both share the same day-grid builder so the
 // X axes line up (day numbers on top, month / year band on the bottom).
 

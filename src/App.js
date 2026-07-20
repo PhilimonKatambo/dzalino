@@ -1,4 +1,4 @@
-﻿import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
 import { useEffect } from "react";
 import { fetchExpenses, fetchTaken, fetchDrums, fetchProduced } from "./expenseSlice";

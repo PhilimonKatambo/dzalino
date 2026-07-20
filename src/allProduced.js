@@ -1,4 +1,4 @@
-﻿// Ledger for the daily-production records.
+// Ledger for the daily-production records.
 
 import { useMemo } from "react";
 import { useSelector } from "react-redux";

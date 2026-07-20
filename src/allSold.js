@@ -1,4 +1,4 @@
-﻿// Ledger for the "taken" records (c/s sold).
+// Ledger for the "taken" records (c/s sold).
 
 import { useMemo } from "react";
 import { useSelector } from "react-redux";

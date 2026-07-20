@@ -1,4 +1,4 @@
-﻿# Dzalino – code flow
+# Dzalino – code flow
 
 This document explains how the Dzalino expense / production dashboard boots, where the data comes from, and which file is responsible for each piece of UI or calculation.
 

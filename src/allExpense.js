@@ -1,4 +1,4 @@
-﻿// Ledger for the expense records. The styling, search, sort, and paging are
+// Ledger for the expense records. The styling, search, sort, and paging are
 // shared with the other ledgers via `./ledgerTable`.
 
 import { useMemo } from "react";
