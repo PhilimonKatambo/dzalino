@@ -1,0 +1,208 @@
+#expenseInput{
+    background: linear-gradient(to right,#253030,#2a3839);
+    border-radius: 2px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.eiHeader{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.eiTitle{
+    color: #69a6bb;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.eiSubtitle{
+    color: #98a087;
+    font-size: 0.8rem;
+}
+
+.eiToggle{
+    background: #1f2a2b;
+    color: #f4f6e5;
+    border: 1px solid #3a4a4f;
+    border-radius: 4px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.9rem;
+    transition: border-color 120ms ease, color 120ms ease;
+}
+
+.eiToggle:hover{
+    border-color: #69a6bb;
+    color: #69a6bb;
+}
+
+.eiForm{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.eiGrid{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.eiField{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.eiFieldWide{
+    grid-column: span 3;
+}
+
+.eiField label{
+    color: #98a087;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.eiField input,
+.eiField select{
+    background: #1f2a2b;
+    color: #f4f6e5;
+    border: 1px solid #3a4a4f;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font: inherit;
+    outline: none;
+    width: 100%;
+}
+
+.eiField input:focus,
+.eiField select:focus{
+    border-color: #69a6bb;
+}
+
+.eiField input::placeholder{
+    color: #6c7a7d;
+}
+
+.eiHint{
+    color: #6c7a7d;
+    font-size: 0.7rem;
+}
+
+.eiCategoryChips{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.eiChip{
+    background: #1f2a2b;
+    color: #98a087;
+    border: 1px solid #3a4a4f;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.eiChip:hover{
+    border-color: #69a6bb;
+    color: #69a6bb;
+}
+
+.eiChipActive{
+    background: #69a6bb;
+    color: #1f2a2b;
+    border-color: #69a6bb;
+}
+
+.eiActions{
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.eiBtn{
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.9rem;
+    border: 1px solid #3a4a4f;
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.eiBtnPrimary{
+    background: #69a6bb;
+    color: #1f2a2b;
+    border-color: #69a6bb;
+    font-weight: 600;
+}
+
+.eiBtnPrimary:hover:not(:disabled){
+    background: #5b95a9;
+    border-color: #5b95a9;
+}
+
+.eiBtnPrimary:disabled{
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.eiBtnGhost{
+    background: transparent;
+    color: #f4f6e5;
+}
+
+.eiBtnGhost:hover{
+    border-color: #69a6bb;
+    color: #69a6bb;
+}
+
+.eiAlert{
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+}
+
+.eiAlertError{
+    background: rgba(232, 91, 91, 0.12);
+    border: 1px solid rgba(232, 91, 91, 0.35);
+    color: #f0b4b4;
+}
+
+.eiStatus{
+    color: #98a087;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 720px) {
+    .eiGrid{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .eiFieldWide{
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 480px) {
+    .eiGrid{
+        grid-template-columns: 1fr;
+    }
+    .eiFieldWide{
+        grid-column: span 1;
+    }
+}

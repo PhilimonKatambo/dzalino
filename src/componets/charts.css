@@ -1,0 +1,148 @@
+﻿#charts{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.chartCard{
+    background: linear-gradient(to right,#253030,#2a3839);
+    border-radius: 2px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.chartHeader{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.chartTitle{
+    color: #69a6bb;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.chartSubtitle{
+    color: #98a087;
+    font-size: 0.8rem;
+}
+
+.chartBody{
+    width: 100%;
+}
+
+.chartEmpty{
+    color: #98a087;
+    font-size: 0.9rem;
+    padding: 24px 4px;
+}
+
+.chartTooltip{
+    background: #1f2a2b;
+    border: 1px solid #3a4a4f;
+    border-radius: 5px;
+    padding: 8px 10px;
+    color: #f4f6e5;
+    font-size: 0.8rem;
+    min-width: 180px;
+}
+
+.chartTooltipLabel{
+    color: #69a6bb;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.chartTooltipRow{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 2px 0;
+}
+
+.chartTooltipSwatch{
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+.chartTooltipName{
+    flex: 1;
+    color: #f4f6e5;
+}
+
+.chartTooltipValue{
+    color: #98a087;
+    font-variant-numeric: tabular-nums;
+}
+
+.chartTooltipTotal{
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid #3a4a4f;
+    color: #69a6bb;
+    font-weight: 600;
+}
+
+/* Two-tier X axis: day numbers on top, month label below.
+   The CSS class names are reused from the previous week-based
+   layout on purpose (chartAxisWeek / chartAxisMonth); they are
+   not literal anymore. */
+.chartAxisWrap{
+    position: relative;
+    width: 100%;
+    height: 56px;
+    margin-top: 2px;
+}
+
+.chartAxisWeek{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+}
+
+.chartAxisMonth{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+}
+
+.chartAxisTick{
+    position: absolute;
+    transform: translateX(-50%);
+    color: #98a087;
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.chartAxisWeek .chartAxisTick{
+    top: 0;
+    color: #98a087;
+}
+
+.chartAxisMonth .chartAxisTick{
+    bottom: 0;
+    color: #69a6bb;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.chartAxisDivider{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 18px;
+    height: 1px;
+    background: #3a4a4f;
+}

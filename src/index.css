@@ -1,4 +1,25 @@
-body {
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
   margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: #f1f5f9;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font-family: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #0f172a;
 }

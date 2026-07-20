@@ -1,34 +1,48 @@
-import React from "react";
-import Dashboard from "./components/Dashboard";
-import ThemeToggle from "./components/ThemeToggle";
+ï»¿import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
+import { useEffect } from "react";
+import { fetchExpenses, fetchTaken,fetchDrums, fetchProduced } from "./expenseSlice";
+import Cards from "./componets/cards";
+import Charts from "./componets/charts";
+import ExpenseInput from "./componets/expenseInput";
+import TakenInput from "./componets/takenInput";
+import AllExpense from "./allExpense";
+import DrumsInput from "./componets/drumsInput";
+import ProducedInput from "./componets/producedInput";
+import Calculations from "./componets/Calculations";
+
 
 function App() {
+
+  const dispatch = useDispatch();
+
+  const expenses = useSelector(
+    (state) => state.expenses.expenses
+  );
+
+
+  useEffect(() => {
+    dispatch(fetchExpenses());
+    dispatch(fetchTaken());
+    dispatch(fetchDrums());
+    dispatch(fetchProduced());
+  }, [dispatch]);
+
+
   return (
-    <div className="app-shell" id="dashboard">
-      <header className="app-header">
-        <div className="brand">
-          <span className="brand-mark" aria-hidden="true">Dz</span>
-          <div className="brand-text">
-            <strong>Dzalino</strong>
-            <span>Expense intelligence</span>
-          </div>
-        </div>
-        <nav className="app-nav">
-          <a href="#dashboard">Dashboard</a>
-          <a href="#analytics">Analytics</a>
-          <a href="#ledger">Ledger</a>
-          <a href="#about">About</a>
-        </nav>
-        <div className="header-actions">
-          <ThemeToggle />
-        </div>
-      </header>
-      <Dashboard />
-      <footer className="app-footer" id="about">
-        <span>Source: <code>/assets/DzalinoData.xlsx</code></span>
-        <span>Built with React + Redux · {new Date().getFullYear()}</span>
-      </footer>
+    <div id="home">
+      <Cards />
+      <div id="expenses">
+        <ExpenseInput />
+        <TakenInput />
+        <DrumsInput />
+        <ProducedInput />
+      </div>
+      <Calculations />
+      <div id="downExp">
+        <AllExpense />
+        <Charts />
+      </div>
     </div>
   );
 }
