@@ -1,14 +1,22 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿// Combined "Expenses per Category Over Time" line chart and a daily total
+// "Expenses per Day" bar chart. Both share the same day-grid builder so the
+// X axes line up (day numbers on top, month / year band on the bottom).
+
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import {
     LineChart,
     Line,
+    BarChart,
+    Bar,
+    XAxis,
     YAxis,
     CartesianGrid,
     Tooltip,
     Legend,
     ResponsiveContainer,
-    ReferenceArea
+    ReferenceArea,
+    Cell
 } from "recharts";
 import "./charts.css";
 
@@ -30,6 +38,9 @@ const SERIES_COLORS = [
     "#b8b8ff"
 ];
 
+// Single bar color for the daily-total chart.
+const BAR_COLOR = "#69a6bb";
+
 const Charts = () => {
     const expenses = useSelector((state) => state.expenses.expenses);
     const {
@@ -37,14 +48,15 @@ const Charts = () => {
         categories,
         start,
         end,
-        monthBands
+        monthBands,
+        totalByDay
     } = useMemo(() => buildSeriesData(expenses), [expenses]);
 
-    if (!rows.length || !categories.length) {
+    if (!rows.length) {
         return (
             <div id="charts">
                 <div className="chartCard">
-                    <div className="chartTitle">Expenses per Category Over Time</div>
+                    <div className="chartTitle">Expenses Over Time</div>
                     <div className="chartEmpty">
                         No dated expenses yet - add records to see the trend.
                     </div>
@@ -111,6 +123,66 @@ const Charts = () => {
                         </LineChart>
                     </ResponsiveContainer>
                     <TwoTierAxis rows={rows} monthBands={monthBands} />
+                </div>
+            </div>
+
+            <div className="chartCard">
+                <div className="chartHeader">
+                    <div className="chartTitle">Expenses per Day</div>
+                    <div className="chartSubtitle">
+                        Total daily spend (K) - {rangeLabel}
+                    </div>
+                </div>
+                <div className="chartBody">
+                    <ResponsiveContainer width="100%" height={400}>
+                        <BarChart
+                            data={totalByDay}
+                            margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+                            barCategoryGap={1}
+                        >
+                            <CartesianGrid stroke="#3a4a4f" strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="x"
+                                type="number"
+                                domain={["dataMin", "dataMax"]}
+                                hide
+                            />
+                            <YAxis
+                                stroke="#98a087"
+                                tick={{ fill: "#98a087", fontSize: 12 }}
+                                tickFormatter={(v) => `K${Number(v).toLocaleString()}`}
+                            />
+                            <Tooltip
+                                content={<DailyBarTooltip />}
+                                cursor={{ fill: "#27383a", fillOpacity: 0.4 }}
+                            />
+                            <Legend
+                                wrapperStyle={{ color: "#98a087", fontSize: 12 }}
+                                iconType="square"
+                            />
+                            {monthBands.map((band, i) => (
+                                <ReferenceArea
+                                    key={`band-bar-${i}`}
+                                    x1={band.start}
+                                    x2={band.end}
+                                    strokeOpacity={0}
+                                    fill={i % 2 === 0 ? "#1f2a2b" : "#27383a"}
+                                    fillOpacity={0.55}
+                                />
+                            ))}
+                            <Bar
+                                dataKey="total"
+                                name="Daily total"
+                                fill={BAR_COLOR}
+                                isAnimationActive={false}
+                            >
+                                {totalByDay.map((entry, i) => (
+                                    <Cell key={`bar-${i}`} fill={BAR_COLOR} />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                    <TwoTierAxis rows={totalByDay} monthBands={monthBands} />
                 </div>
             </div>
         </div>
@@ -189,6 +261,27 @@ const CurrencyTooltip = ({ active, payload, label }) => {
     );
 };
 
+const DailyBarTooltip = ({ active, payload, label }) => {
+    if (!active || !payload || !payload.length) return null;
+    const entry = payload[0] && payload[0].payload ? payload[0].payload : null;
+    const day = entry ? entry.dayLabel : label;
+    return (
+        <div className="chartTooltip">
+            <div className="chartTooltipLabel">{day}</div>
+            <div className="chartTooltipRow">
+                <span
+                    className="chartTooltipSwatch"
+                    style={{ background: BAR_COLOR }}
+                />
+                <span className="chartTooltipName">Daily total</span>
+                <span className="chartTooltipValue">
+                    K{Number(entry ? entry.total : 0).toLocaleString()}
+                </span>
+            </div>
+        </div>
+    );
+};
+
 const parseDate = (raw) => {
     if (raw == null) return null;
     if (raw instanceof Date) {
@@ -254,7 +347,7 @@ function buildSeriesData(expenses) {
         .filter((e) => e._d && e.Category);
 
     if (!dated.length) {
-        return { rows: [], categories: [], start: null, end: null, monthBands: [] };
+        return { rows: [], categories: [], start: null, end: null, monthBands: [], totalByDay: [] };
     }
 
     let start = dated[0]._d;
@@ -285,7 +378,7 @@ function buildSeriesData(expenses) {
     }
     const dayEntries = Array.from(dayMap.values());
 
-    // Tally spend per (day, category)
+    // Tally spend per (day, category) and per day overall
     const totals = new Map();
     const categorySet = new Set();
     for (const e of dated) {
@@ -312,6 +405,21 @@ function buildSeriesData(expenses) {
             row[cat] = Number((values[cat] || 0).toFixed(2));
         }
         return row;
+    });
+
+    // Daily-total bar series: numeric X axis aligned to the row index plus
+    // a copy of the day metadata so the tooltip and axis can reuse it.
+    const totalByDay = rows.map((r) => {
+        let total = 0;
+        for (const cat of categories) total += Number(r[cat]) || 0;
+        return {
+            x: r.idx,
+            total: Number(total.toFixed(2)),
+            dayNumber: r.dayNumber,
+            dayLabel: r.dayLabel,
+            year: r.year,
+            month: r.month
+        };
     });
 
     // Build month bands from the day list
@@ -348,7 +456,7 @@ function buildSeriesData(expenses) {
         });
     }
 
-    return { rows, categories, start, end, monthBands };
+    return { rows, categories, start, end, monthBands, totalByDay };
 }
 
 export default Charts;
