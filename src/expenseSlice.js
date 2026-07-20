@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const Expense_URL = "http://localhost:1000/expense/data";
-const Taken_URL = "http://localhost:1000/taken/data";
-const Drums_URL = "http://localhost:1000/drums/data";
-const Produced_URL = "http://localhost:1000/dailyProduce/data";
+const Expense_URL = `${process.env.REACT_APP_BACKEND_URI}/expense/data`;
+const Taken_URL = `${process.env.REACT_APP_BACKEND_URI}/taken/data`;
+const Drums_URL = `${process.env.REACT_APP_BACKEND_URI}/drums/data`;
+const Produced_URL = `${process.env.REACT_APP_BACKEND_URI}/dailyProduce/data`;
 
 export const fetchExpenses = createAsyncThunk(
     "expenses/fetchExpenses",

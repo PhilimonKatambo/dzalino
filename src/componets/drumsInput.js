@@ -46,7 +46,7 @@ const DrumsInput = () => {
         setSubmitting(true);
 
         try {
-            const res = await fetch("http://localhost:1000/drums/insert", {
+            const res = await fetch(`${process.env.REACT_APP_BACKEND_URI}/drums/insert`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

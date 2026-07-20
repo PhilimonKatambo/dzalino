@@ -52,7 +52,7 @@ const TakenInput = () => {
         setSubmitting(true);
 
         try {
-            const res = await fetch("http://localhost:1000/taken/insert", {
+            const res = await fetch(`${process.env.REACT_APP_BACKEND_URI}/taken/insert`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

@@ -49,7 +49,7 @@ const ProducedInput = () => {
         setSubmitting(true);
 
         try {
-            const res = await fetch("http://localhost:1000/dailyProduce/insert", {
+            const res = await fetch(`${process.env.REACT_APP_BACKEND_URI}/dailyProduce/insert`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

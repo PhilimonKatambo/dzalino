@@ -2,8 +2,7 @@ import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import "./expenseInput.css";
 
-const BACKEND_URL = (process.env.REACT_APP_BACKEND_URI || "http://localhost:1000")
-    .replace(/\/$/, "");
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URI;
 const INSERT_URL = `${BACKEND_URL}/insert/data`;
 
 const DEFAULT_FORM = {
@@ -115,7 +114,7 @@ const ExpenseInput = () => {
 
         setSubmitting(true);
         try {
-            const response = await fetch("http://localhost:1000/expense/insert", {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/expense/insert`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
