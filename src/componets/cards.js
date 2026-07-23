@@ -13,12 +13,15 @@ const Cards = () => {
             <TotalExpenseCard />
             <TotalTakenCard />
             <TotalProducedCard />
+            <TotalNipsCard />
+            <TotalBigPapersCard />
+            <TotalBigCartonCard />
             <TotalDrumsCard />
             <LargetExpense />
             <AverageExpense />
             <TopCategory />
             <Categories />
-            <CoverageDuration />
+            {/* <CoverageDuration /> */}
         </div>
     )
 }
@@ -54,20 +57,42 @@ const TotalTakenCard = () => {
     );
 
     const [total, setTotal] = useState(0);
+    const [totalN, setTotalN] = useState(0);
+    const [totalBP, setTotalBP] = useState(0);
+    const [totalBC, setTotalBC] = useState(0);
+
+    let totali = 0;
+    let total1 = 0;
+    let total2 = 0;
+    let total3 = 0;
 
     useEffect(() => {
-        let total1 = 0;
         list_safe(taken).forEach(element => {
-            total1 = total1 + (Number(element.Qty) || 0);
+            totali = totali + (Number(element.Qty) || 0);
         });
-        setTotal(total1);
+
+        list_safe(taken).forEach(element => {
+            if (element.Category === "Nips") {
+                total1 = total1 + (Number(element.Qty) || 0);
+            }
+            if (element.Category === "Bigs_papers") {
+                total2 = total2 + (Number(element.Qty) || 0);
+            }
+            if (element.Category === "Bigs_cartons") {
+                total3 = total3 + (Number(element.Qty) || 0);
+            }
+        });
+        setTotal(totali);
+        setTotalN(total1);
+        setTotalBP(total2);
+        setTotalBC(total3);
     }, [taken])
 
     return (
         <div id="exCard">
-            <div id="word">Total Dzalino cls Sold</div>
+            <div id="word">Total c/s Sold</div>
             <div id="actNumber">{Number(total).toLocaleString()} c/s</div>
-            <div id="subExp">{Number(list_safe(taken).length).toLocaleString()} times</div>
+            <div id="subExp">Nips:{Number(totalN).toLocaleString()}, B-P:{Number(totalBP).toLocaleString()}, B-C:{Number(totalBC).toLocaleString()}</div>
         </div>
     )
 }
@@ -78,20 +103,42 @@ const TotalProducedCard = () => {
     );
 
     const [total, setTotal] = useState(0);
+    const [totalN, setTotalN] = useState(0);
+    const [totalBP, setTotalBP] = useState(0);
+    const [totalBC, setTotalBC] = useState(0);
 
+    let totali = 0;
+    let total1 = 0;
+    let total2 = 0;
+    let total3 = 0;
     useEffect(() => {
-        let total1 = 0;
         list_safe(taken).forEach(element => {
-            total1 = total1 + (Number(element.Qty) || 0);
+            totali = totali + (Number(element.Qty) || 0);
         });
-        setTotal(total1);
+
+        list_safe(taken).forEach(element => {
+            if (element.Category === "Nips") {
+                total1 = total1 + (Number(element.Qty) || 0);
+            }
+            if (element.Category === "Bigs_papers") {
+                total2 = total2 + (Number(element.Qty) || 0);
+            }
+            if (element.Category === "Bigs_cartons") {
+                total3 = total3 + (Number(element.Qty) || 0);
+            }
+        });
+
+        setTotal(totali);
+        setTotalN(total1);
+        setTotalBP(total2);
+        setTotalBC(total3);
     }, [taken])
 
     return (
         <div id="exCard">
             <div id="word">Total c/s Produced</div>
             <div id="actNumber">{Number(total).toLocaleString()} C/s</div>
-            <div id="subExp">{Number(list_safe(taken).length).toLocaleString()} times</div>
+            <div id="subExp">Nips:{Number(totalN).toLocaleString()}, B-P:{Number(totalBP).toLocaleString()}, B-C:{Number(totalBC).toLocaleString()}</div>
         </div>
     )
 }
@@ -120,6 +167,107 @@ const TotalDrumsCard = () => {
     )
 }
 
+const TotalNipsCard = () => {
+    const takenList = useSelector(
+        (state) => state.expenses.taken
+    );
+
+    const producedList = useSelector(
+        (state) => state.expenses.produced
+    );
+
+    const take = list_safe(takenList).reduce((sum, el) => {
+        if (el.Category === "Nips") {
+            return sum + (Number(el.Qty) || 0);
+        }
+        return sum;
+    }, 0);
+
+    const prod = list_safe(producedList).reduce((sum, el) => {
+        if (el.Category === "Nips") {
+            return sum + (Number(el.Qty) || 0);
+        }
+        return sum;
+    }, 0);
+
+    const total = prod - take;
+
+    return (
+        <div id="exCard">
+            <div id="word">Nips c/s remaining</div>
+            <div id="actNumber">{total.toLocaleString()} c/s</div>
+            <div id="subExp">Prod: {prod} - {take}: Taken</div>
+        </div>
+    );
+};
+
+const TotalBigPapersCard = () => {
+    const takenList = useSelector(
+        (state) => state.expenses.taken
+    );
+
+    const producedList = useSelector(
+        (state) => state.expenses.produced
+    );
+
+    const take = list_safe(takenList).reduce((sum, el) => {
+        if (el.Category === "Bigs_papers") {
+            return sum + (Number(el.Qty) || 0);
+        }
+        return sum;
+    }, 0);
+
+    const prod = list_safe(producedList).reduce((sum, el) => {
+        if (el.Category === "Bigs_papers") {
+            return sum + (Number(el.Qty) || 0);
+        }
+        return sum;
+    }, 0);
+
+    const total = prod - take;
+
+    return (
+        <div id="exCard">
+            <div id="word">Big Papers c/s remaining</div>
+            <div id="actNumber">{total.toLocaleString()} c/s</div>
+            <div id="subExp">Prod: {prod} - {take}: Taken</div>
+        </div>
+    );
+};
+
+const TotalBigCartonCard = () => {
+    const takenList = useSelector(
+        (state) => state.expenses.taken
+    );
+
+    const producedList = useSelector(
+        (state) => state.expenses.produced
+    );
+
+    const take = list_safe(takenList).reduce((sum, el) => {
+        if (el.Category === "Bigs_cartons") {
+            return sum + (Number(el.Qty) || 0);
+        }
+        return sum;
+    }, 0);
+
+    const prod = list_safe(producedList).reduce((sum, el) => {
+        if (el.Category === "Bigs_cartons") {
+            return sum + (Number(el.Qty) || 0);
+        }
+        return sum;
+    }, 0);
+
+    const total = prod - take;
+
+    return (
+        <div id="exCard">
+            <div id="word">Big Cartons c/s remaining</div>
+            <div id="actNumber">{total.toLocaleString()} c/s</div>
+            <div id="subExp">Prod: {prod} - {take}: Taken</div>
+        </div>
+    );
+};
 
 
 

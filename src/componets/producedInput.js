@@ -117,6 +117,7 @@ const ProducedInput = () => {
                                 value={form.category}
                                 onChange={handleChange("category")}
                             >
+                                <option>Select Category</option>
                                 <option value="Nips">Nips</option>
                                 <option value="Bigs_papers">Bigs_papers</option>
                                 <option value="Bigs_cartons">Bigs_cartons</option>

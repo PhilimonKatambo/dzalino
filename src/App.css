@@ -28,6 +28,7 @@ body {
   color: #69a6bb;
   font-weight: 500;
   width: fit-content;
+  font-size: .8rem;
 }
 
 #actNumber {
