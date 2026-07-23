@@ -95,7 +95,7 @@ const BigPapers = (props) => {
             <div id="calcuCont">
                 {
                     Object.entries(rawMaterials).map(([key, value]) => (
-                        <div id="raww">
+                        <div id="raww" key={key}>
                             <div id="rawLeft">
                                 {Icons[key]}
                                 <div id="rawName">{key}:</div>
@@ -185,7 +185,7 @@ const BigCartons = (props) => {
             <div id="calcuCont">
                 {
                     Object.entries(rawMaterials).map(([key, value]) => (
-                        <div id="raww">
+                        <div id="raww" key={key}>
                             <div id="rawLeft">
                                 {Icons[key]}
                                 <div id="rawName">{key}:</div>
@@ -275,7 +275,7 @@ const Nips = (props) => {
             <div id="calcuCont">
                 {
                     Object.entries(rawMaterials).map(([key, value]) => (
-                        <div id="raww">
+                        <div id="raww" key={key}>
                             <div id="rawLeft">
                                 {Icons[key]}
                                 <div id="rawName">{key}:</div>
