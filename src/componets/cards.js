@@ -24,8 +24,6 @@ const Cards = () => {
 }
 
 const TotalExpenseCard = () => {
-    let total1 = 0;
-
     const expenses = useSelector(
         (state) => state.expenses.expenses
     );
@@ -33,15 +31,12 @@ const TotalExpenseCard = () => {
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
-        calculateTotal();
-    }, [expenses])
-
-    const calculateTotal = () => {
-        expenses.forEach(element => {
-            total1 = total1 + element.Total;
+        let total1 = 0;
+        list_safe(expenses).forEach(element => {
+            total1 = total1 + (Number(element.Total) || 0);
         });
         setTotal(total1);
-    }
+    }, [expenses])
 
     return (
         <div id="exCard">
@@ -54,8 +49,6 @@ const TotalExpenseCard = () => {
 
 
 const TotalTakenCard = () => {
-    let total1 = 0;
-
     const taken = useSelector(
         (state) => state.expenses.taken
     );
@@ -63,15 +56,12 @@ const TotalTakenCard = () => {
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
-        calculateTotal();
-    }, [taken])
-
-    const calculateTotal = () => {
-        taken.forEach(element => {
-            total1 = total1 + element.Qty;
+        let total1 = 0;
+        list_safe(taken).forEach(element => {
+            total1 = total1 + (Number(element.Qty) || 0);
         });
         setTotal(total1);
-    }
+    }, [taken])
 
     return (
         <div id="exCard">
@@ -83,8 +73,6 @@ const TotalTakenCard = () => {
 }
 
 const TotalProducedCard = () => {
-    let total1 = 0;
-
     const taken = useSelector(
         (state) => state.expenses.produced
     );
@@ -92,15 +80,12 @@ const TotalProducedCard = () => {
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
-        calculateTotal();
-    }, [taken])
-
-    const calculateTotal = () => {
-        taken.forEach(element => {
-            total1 = total1 + element.Qty;
+        let total1 = 0;
+        list_safe(taken).forEach(element => {
+            total1 = total1 + (Number(element.Qty) || 0);
         });
         setTotal(total1);
-    }
+    }, [taken])
 
     return (
         <div id="exCard">
@@ -112,8 +97,6 @@ const TotalProducedCard = () => {
 }
 
 const TotalDrumsCard = () => {
-    let total1 = 0;
-
     const taken = useSelector(
         (state) => state.expenses.drums
     );
@@ -121,15 +104,12 @@ const TotalDrumsCard = () => {
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
-        calculateTotal();
-    }, [taken])
-
-    const calculateTotal = () => {
-        taken.forEach(element => {
-            total1 = total1 + element.Qty;
+        let total1 = 0;
+        list_safe(taken).forEach(element => {
+            total1 = total1 + (Number(element.Qty) || 0);
         });
         setTotal(total1);
-    }
+    }, [taken])
 
     return (
         <div id="exCard">
@@ -152,18 +132,10 @@ const LargetExpense = () => {
     const [low, setLow] = useState(0);
 
     useEffect(() => {
-        calculateTotal();
+        const all = list_safe(expenses).map(e => Number(e.Total) || 0);
+        setBig(all.length ? Math.max(...all) : 0)
+        setLow(all.length ? Math.min(...all) : 0)
     }, [expenses])
-
-    const calculateTotal = () => {
-        const all = [];
-        expenses.forEach(element => {
-            all.push(element.Total);
-        });
-
-        setBig(list_safe(all).length ? Math.max(...all) : 0)
-        setLow(list_safe(all).length ? Math.min(...all) : 0)
-    }
 
     return (
         <div id="exCard">
@@ -182,10 +154,6 @@ const AverageExpense = () => {
     const [avg, setAvg] = useState(0);
 
     useEffect(() => {
-        calculateAverage();
-    }, [expenses])
-
-    const calculateAverage = () => {
         const list = list_safe(expenses);
         if (!list.length) {
             setAvg(0);
@@ -193,7 +161,7 @@ const AverageExpense = () => {
         }
         const sum = list.reduce((s, e) => s + (Number(e.Total) || 0), 0);
         setAvg(sum / list.length);
-    }
+    }, [expenses])
 
     return (
         <div id="exCard">
@@ -212,10 +180,6 @@ const TopCategory = () => {
     const [top, setTop] = useState({ name: "\u2014", total: 0 });
 
     useEffect(() => {
-        calculateTop();
-    }, [expenses])
-
-    const calculateTop = () => {
         const list = list_safe(expenses);
         if (!list.length) {
             setTop({ name: "\u2014", total: 0 });
@@ -228,7 +192,7 @@ const TopCategory = () => {
         }, {});
         const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
         setTop({ name: sorted[0][0], total: sorted[0][1] });
-    }
+    }, [expenses])
 
     return (
         <div id="exCard">
@@ -247,17 +211,12 @@ const Categories = () => {
     const [cats, setCats] = useState([]);
 
     useEffect(() => {
-        calculateTotal();
-    }, [expenses])
-
-    const calculateTotal = () => {
         const all = [];
         list_safe(expenses).forEach(element => {
             all.push(element.Category);
         });
-
         setCats([...new Set(all)])
-    }
+    }, [expenses])
 
     return (
         <div id="exCard">
@@ -379,3 +338,4 @@ function list_safe(value) {
 }
 
 export default Cards
+
