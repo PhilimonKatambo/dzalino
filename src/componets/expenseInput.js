@@ -2,9 +2,6 @@ import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import "./expenseInput.css";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URI;
-const INSERT_URL = `${BACKEND_URL}/insert/data`;
-
 const DEFAULT_FORM = {
     date: "",
     description: "",

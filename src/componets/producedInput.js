@@ -9,7 +9,7 @@ const DEFAULT_FORM = {
 };
 
 const ProducedInput = () => {
-    const status = useSelector((state) => state.expenses.loading);
+    // const status = useSelector((state) => state.expenses.loading);
 
     const [form, setForm] = useState(DEFAULT_FORM);
     const [showForm, setShowForm] = useState(false);
