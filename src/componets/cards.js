@@ -17,8 +17,8 @@ const Cards = () => {
             <LargetExpense />
             <AverageExpense />
             <TopCategory />
-            {/* <Categories /> */}
-            {/* <CoverageDuration /> */}
+            <Categories />
+            <CoverageDuration />
         </div>
     )
 }
@@ -263,7 +263,7 @@ const CoverageDuration = () => {
             const s = raw.trim();
             if (!s) return null;
             // dd/mm/yyyy
-            const dmy = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/);
+            const dmy = s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})/);
             if (dmy) {
                 const day = Number(dmy[1]);
                 const month = Number(dmy[2]);
@@ -338,4 +338,5 @@ function list_safe(value) {
 }
 
 export default Cards
+
 
