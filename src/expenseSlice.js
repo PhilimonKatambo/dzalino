@@ -9,7 +9,14 @@ const Produced_URL = `${process.env.REACT_APP_BACKEND_URI}/dailyProduce/data`;
 export const fetchExpenses = createAsyncThunk(
     "expenses/fetchExpenses",
     async () => {
-        const response = await axios.get(Expense_URL);
+        const response = await axios.get(
+            Expense_URL,
+            {
+                headers:{
+                    authorization: "jsy7392#9%$ya$D!2@£$34",
+                }
+            }
+        );
         return response.data;
     }
 );
@@ -17,21 +24,35 @@ export const fetchExpenses = createAsyncThunk(
 export const fetchTaken = createAsyncThunk(
     "taken/fetchExpenses",
     async () => {
-        const response = await axios.get(Taken_URL);
+        const response = await axios.get(Taken_URL,{
+                headers:{
+                    authorization: "jsy7392#9%$ya$D!2@£$34",
+                }
+            });
         return response.data;
     }
 );
 export const fetchDrums = createAsyncThunk(
     "drums/fetchExpenses",
     async () => {
-        const response = await axios.get(Drums_URL);
+        const response = await axios.get(Drums_URL,
+            {
+                headers:{
+                    authorization: "jsy7392#9%$ya$D!2@£$34",
+                }
+            }
+        );
         return response.data;
     }
 );
 export const fetchProduced = createAsyncThunk(
     "produced/fetchExpenses",
     async () => {
-        const response = await axios.get(Produced_URL);
+        const response = await axios.get(Produced_URL,{
+                headers:{
+                    authorization: "jsy7392#9%$ya$D!2@£$34",
+                }
+            });
         return response.data;
     }
 );
