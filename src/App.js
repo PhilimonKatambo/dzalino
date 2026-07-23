@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import "./App.css";
 import { useEffect } from "react";
 import { fetchExpenses, fetchTaken, fetchDrums, fetchProduced } from "./expenseSlice";
@@ -49,3 +49,4 @@ function App() {
 }
 
 export default App;
+

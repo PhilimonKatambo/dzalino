@@ -14,6 +14,7 @@ const Calculations = () => {
 
     useEffect(() => {
         calculateTotalProduce();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [produced])
 
     const calculateTotalProduce = () => {
@@ -64,6 +65,7 @@ const BigPapers = (props) => {
 
     useEffect(() => {
         calculateTotal();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [totalProduce])
 
     const calculateTotal = () => {
@@ -152,6 +154,7 @@ const BigCartons = (props) => {
 
     useEffect(() => {
         calculateTotal();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [totalProduce])
 
     const calculateTotal = () => {
@@ -241,6 +244,7 @@ const Nips = (props) => {
 
     useEffect(() => {
         calculateTotal();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [totalProduce])
 
     const calculateTotal = () => {
