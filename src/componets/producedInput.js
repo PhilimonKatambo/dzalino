@@ -4,11 +4,10 @@ import "./expenseInput.css";
 const DEFAULT_FORM = {
     date: "",
     qty: "",
-    category: "Nips" // default value
+    category: "Nips"
 };
 
 const ProducedInput = () => {
-    // const status = useSelector((state) => state.expenses.loading);
 
     const [form, setForm] = useState(DEFAULT_FORM);
     const [showForm, setShowForm] = useState(false);
