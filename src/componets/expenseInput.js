@@ -114,7 +114,8 @@ const ExpenseInput = () => {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/expense/insert`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    authorization: "jsy7392#9%$ya$D!2@£$34",
                 },
                 body: JSON.stringify(payload)
             });
