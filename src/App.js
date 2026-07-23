@@ -19,11 +19,6 @@ function App() {
 
   const dispatch = useDispatch();
 
-  const expenses = useSelector(
-    (state) => state.expenses.expenses
-  );
-
-
   useEffect(() => {
     dispatch(fetchExpenses());
     dispatch(fetchTaken());

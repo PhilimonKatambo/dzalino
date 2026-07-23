@@ -4,7 +4,7 @@
     border-radius: 2px;
     padding: 16px 20px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 12px;
     width: 100%;
 }

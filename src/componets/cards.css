@@ -2,7 +2,7 @@
     width: 100%;
     display: flex;
     flex-wrap: nowrap;
-    gap: 10px;
+    gap: 2px;
     overflow: scroll;
     scrollbar-width: none;
 }

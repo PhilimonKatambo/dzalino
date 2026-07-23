@@ -8,8 +8,6 @@ const DEFAULT_FORM = {
 };
 
 const DrumsInput = () => {
-    const status = useSelector((state) => state.expenses.loading);
-
     const [form, setForm] = useState(DEFAULT_FORM);
     const [showForm, setShowForm] = useState(false);
     const [feedback, setFeedback] = useState("");
