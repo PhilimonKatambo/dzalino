@@ -11,8 +11,8 @@ const Cards = () => {
     return (
         <div id="cards">
             <TotalExpenseCard />
-            <TotalTakenCard />
             <TotalProducedCard />
+            <TotalTakenCard />
             <TotalNipsCard />
             <TotalBigPapersCard />
             <TotalBigCartonCard />
