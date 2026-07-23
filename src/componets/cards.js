@@ -61,12 +61,11 @@ const TotalTakenCard = () => {
     const [totalBP, setTotalBP] = useState(0);
     const [totalBC, setTotalBC] = useState(0);
 
-    let totali = 0;
-    let total1 = 0;
-    let total2 = 0;
-    let total3 = 0;
-
     useEffect(() => {
+        let totali = 0;
+        let total1 = 0;
+        let total2 = 0;
+        let total3 = 0;
         list_safe(taken).forEach(element => {
             totali = totali + (Number(element.Qty) || 0);
         });
@@ -107,11 +106,12 @@ const TotalProducedCard = () => {
     const [totalBP, setTotalBP] = useState(0);
     const [totalBC, setTotalBC] = useState(0);
 
-    let totali = 0;
-    let total1 = 0;
-    let total2 = 0;
-    let total3 = 0;
     useEffect(() => {
+        let totali = 0;
+        let total1 = 0;
+        let total2 = 0;
+        let total3 = 0;
+
         list_safe(taken).forEach(element => {
             totali = totali + (Number(element.Qty) || 0);
         });
