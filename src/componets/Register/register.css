@@ -1,0 +1,181 @@
+﻿.register-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.register-card {
+    width: 100%;
+    max-width: 460px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.register-title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.register-subtitle {
+    margin: 4px 0 18px 0;
+    color: #475569;
+    font-size: 14px;
+}
+
+.register-label {
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.register-input {
+    margin-top: 6px;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+    background: #f8fafc;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.register-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    background: #ffffff;
+}
+
+.register-input[aria-invalid="true"] {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.16);
+}
+
+.register-password-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.register-password-row .register-input {
+    flex: 1;
+}
+
+.register-toggle {
+    margin-top: 6px;
+    padding: 0 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 120ms ease;
+}
+
+.register-toggle:hover {
+    background: #e2e8f0;
+}
+
+.register-error {
+    min-height: 18px;
+    margin-top: 4px;
+    color: #dc2626;
+    font-size: 12.5px;
+    line-height: 1.3;
+}
+
+.register-form-error {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #fef2f2;
+    color: #991b1b;
+    font-size: 13px;
+    border: 1px solid #fecaca;
+}
+
+.register-form-success {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #ecfdf5;
+    color: #065f46;
+    font-size: 13px;
+    border: 1px solid #a7f3d0;
+}
+
+.register-submit {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: none;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 120ms ease, transform 120ms ease;
+}
+
+.register-submit:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.register-submit:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.register-submit:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+.register-switch {
+    margin-top: 14px;
+    text-align: center;
+    color: #475569;
+    font-size: 13px;
+}
+
+.register-switch-link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: #2563eb;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+.register-switch-link:hover {
+    color: #1d4ed8;
+}
+
+.register-hints {
+    margin: 16px 0 0 0;
+    padding: 12px 14px;
+    list-style: disc inside;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    color: #475569;
+    font-size: 12.5px;
+    line-height: 1.5;
+}

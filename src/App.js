@@ -13,10 +13,10 @@ import AllExpense from "./allExpense";
 import AllSold from "./allSold";
 import AllProduced from "./allProduced";
 import AllDrums from "./allDrums";
+import AuthGate from "./componets/AuthGate/AuthGate";
 
 
-function App() {
-
+function Dashboard() {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -25,7 +25,6 @@ function App() {
     dispatch(fetchDrums());
     dispatch(fetchProduced());
   }, [dispatch]);
-
 
   return (
     <div id="home">
@@ -48,5 +47,12 @@ function App() {
   );
 }
 
-export default App;
+function App() {
+  return (
+    <AuthGate>
+      <Dashboard />
+    </AuthGate>
+  );
+}
 
+export default App;

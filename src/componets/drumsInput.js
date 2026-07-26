@@ -1,12 +1,17 @@
-import { useState } from "react";
+﻿import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { authedPost } from "../auth/authedRequest";
+import { fetchDrums } from "../expenseSlice";
 import "./expenseInput.css";
 
 const DEFAULT_FORM = {
     date: "",
-    qty: ""
+    qty: "",
 };
 
 const DrumsInput = () => {
+    const dispatch = useDispatch();
+
     const [form, setForm] = useState(DEFAULT_FORM);
     const [showForm, setShowForm] = useState(false);
     const [feedback, setFeedback] = useState("");
@@ -16,7 +21,7 @@ const DrumsInput = () => {
     const handleChange = (field) => (e) => {
         setForm((prev) => ({
             ...prev,
-            [field]: e.target.value
+            [field]: e.target.value,
         }));
     };
 
@@ -37,26 +42,26 @@ const DrumsInput = () => {
 
         const payload = {
             Date: form.date,
-            Qty: qty
+            Qty: qty,
         };
 
         setSubmitting(true);
 
         try {
-            const res = await fetch(`${process.env.REACT_APP_BACKEND_URI}/drums/insert`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: "jsy7392#9%$ya$D!2@£$34",
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) throw new Error("Failed to save");
+            // Axios-based so the JWT interceptor attaches the Bearer token.
+            const result = await authedPost(
+                `${process.env.REACT_APP_BACKEND_URI}/drums/insert`,
+                payload
+            );
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to save");
+            }
 
             resetForm();
-            // setShowForm(false);
             setFeedback("Record Saved!");
+            // Refresh the Redux cache for the "drums" table.
+            dispatch(fetchDrums());
+
             setTimeout(() => {
                 setFeedback("");
             }, 1000);
@@ -72,9 +77,7 @@ const DrumsInput = () => {
             <div className="eiHeader">
                 <div>
                     <div className="eiTitle">Add drums given</div>
-                    <div className="eiSubtitle">
-                        Record drums of ethanol given.
-                    </div>
+                    <div className="eiSubtitle">Record drums of ethanol given.</div>
                 </div>
                 <button className="eiToggle" onClick={() => setShowForm(!showForm)}>
                     {showForm ? "Close" : "+ New Drums"}
@@ -84,8 +87,6 @@ const DrumsInput = () => {
             {showForm && (
                 <form className="eiForm" onSubmit={handleSubmit}>
                     <div className="eiGrid">
-
-                        {/* Date */}
                         <div className="eiField">
                             <label>Date</label>
                             <input
@@ -95,7 +96,6 @@ const DrumsInput = () => {
                             />
                         </div>
 
-                        {/* Quantity */}
                         <div className="eiField">
                             <label>Quantity</label>
                             <input
@@ -106,7 +106,6 @@ const DrumsInput = () => {
                             />
                         </div>
 
-                        {/* Submit */}
                         <button
                             className="eiBtn eiBtnPrimary"
                             type="submit"
@@ -116,7 +115,9 @@ const DrumsInput = () => {
                         </button>
 
                         {error && <p style={{ color: "red" }}>{error}</p>}
-                        {feedback !== "" ? <p style={{ color: "green" }}>{feedback}</p> : null}
+                        {feedback !== "" ? (
+                            <p style={{ color: "green" }}>{feedback}</p>
+                        ) : null}
                     </div>
                 </form>
             )}

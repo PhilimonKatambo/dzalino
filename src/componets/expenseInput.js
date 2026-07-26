@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+﻿import { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { authedPost } from "../auth/authedRequest";
+import { fetchExpenses } from "../expenseSlice";
 import "./expenseInput.css";
 
 const DEFAULT_FORM = {
@@ -8,7 +10,7 @@ const DEFAULT_FORM = {
     category: "",
     qty: "",
     unitPrice: "",
-    total: ""
+    total: "",
 };
 
 const SUGGESTED_CATEGORIES = [
@@ -25,6 +27,7 @@ const SUGGESTED_CATEGORIES = [
 
 const ExpenseInput = () => {
     const status = useSelector((state) => state.expenses.loading);
+    const dispatch = useDispatch();
 
     const [form, setForm] = useState(DEFAULT_FORM);
     const [showForm, setShowForm] = useState(false);
@@ -106,36 +109,29 @@ const ExpenseInput = () => {
             Category: category,
             Qty: qty,
             Unit_Price: unitPrice,
-            Total: total
+            Total: total,
         };
 
         setSubmitting(true);
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/expense/insert`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: "jsy7392#9%$ya$D!2@£$34",
-                },
-                body: JSON.stringify(payload)
-            });
+            // Goes through axios so `installAxiosAuth` attaches
+            // `Authorization: Bearer <jwt>`. No static `authorization`
+            // header is sent — the JWT is the only credential.
+            const result = await authedPost(
+                `${process.env.REACT_APP_BACKEND_URI}/expense/insert`,
+                payload
+            );
 
-            if (!response.ok) {
-                let message = `Request failed with status ${response.status}`;
-                try {
-                    const data = await response.json();
-                    if (data && (data.message || data.error)) {
-                        message = data.message || data.error;
-                    }
-                } catch (_) {
-                    // ignore JSON parse errors and use the default message
-                }
-                throw new Error(message);
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to save the expense.");
             }
 
             resetForm();
-            // setShowForm(false);
             setFeedback("Record Saved!");
+
+            // Refresh the Redux cache so the table, KPIs, and chart pick
+            // up the new row without the user reloading the page.
+            dispatch(fetchExpenses());
 
             setTimeout(() => {
                 setFeedback("");
@@ -301,7 +297,7 @@ const ExpenseInput = () => {
                             {submitting ? "Saving..." : "Save Expense"}
                         </button>
                     </div>
-                        {feedback !== "" ? <p style={{ color: "green" }}>{feedback}</p> : null}
+                    {feedback !== "" ? <p style={{ color: "green" }}>{feedback}</p> : null}
                 </form>
             )}
 
@@ -313,5 +309,3 @@ const ExpenseInput = () => {
 };
 
 export default ExpenseInput;
-
-

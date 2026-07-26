@@ -1,0 +1,55 @@
+.authgate-shell {
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.authgate-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: #0f172a;
+    color: #f8fafc;
+    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.18);
+}
+
+.authgate-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.authgate-user-name {
+    font-weight: 700;
+}
+
+.authgate-user-role {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #1e293b;
+    color: #93c5fd;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.authgate-logout {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: transparent;
+    color: #f8fafc;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease;
+}
+
+.authgate-logout:hover {
+    background: #1e293b;
+    border-color: #475569;
+}
+
+.authgate-main {
+    padding: 16px;
+}

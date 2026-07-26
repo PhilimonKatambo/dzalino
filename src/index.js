@@ -4,7 +4,10 @@ import { Provider } from "react-redux";
 import "./index.css";
 import App from "./App";
 import { store } from "./store";
+import { installAxiosAuth } from "./auth/axiosAuth";
 import reportWebVitals from "./reportWebVitals";
+
+installAxiosAuth();
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

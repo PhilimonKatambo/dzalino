@@ -1,13 +1,17 @@
-import { useState } from "react";
+﻿import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { authedPost } from "../auth/authedRequest";
+import { fetchProduced } from "../expenseSlice";
 import "./expenseInput.css";
 
 const DEFAULT_FORM = {
     date: "",
     qty: "",
-    category: "Nips"
+    category: "Nips",
 };
 
 const ProducedInput = () => {
+    const dispatch = useDispatch();
 
     const [form, setForm] = useState(DEFAULT_FORM);
     const [showForm, setShowForm] = useState(false);
@@ -18,7 +22,7 @@ const ProducedInput = () => {
     const handleChange = (field) => (e) => {
         setForm((prev) => ({
             ...prev,
-            [field]: e.target.value
+            [field]: e.target.value,
         }));
     };
 
@@ -41,26 +45,25 @@ const ProducedInput = () => {
         const payload = {
             Date: form.date,
             Qty: qty,
-            Category: form.category
+            Category: form.category,
         };
 
         setSubmitting(true);
 
         try {
-            const res = await fetch(`${process.env.REACT_APP_BACKEND_URI}/dailyProduce/insert`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: "jsy7392#9%$ya$D!2@£$34",
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) throw new Error("Failed to save");
+            // Axios-based so the JWT interceptor attaches the Bearer token.
+            const result = await authedPost(
+                `${process.env.REACT_APP_BACKEND_URI}/dailyProduce/insert`,
+                payload
+            );
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to save");
+            }
 
             resetForm();
-            // setShowForm(false);
             setFeedback("Record Saved!");
+            // Refresh the Redux cache for the "produced" table.
+            dispatch(fetchProduced());
 
             setTimeout(() => {
                 setFeedback("");
@@ -77,9 +80,7 @@ const ProducedInput = () => {
             <div className="eiHeader">
                 <div>
                     <div className="eiTitle">Add produced c/s</div>
-                    <div className="eiSubtitle">
-                        Record number of c/s made.
-                    </div>
+                    <div className="eiSubtitle">Record number of c/s made.</div>
                 </div>
                 <button className="eiToggle" onClick={() => setShowForm(!showForm)}>
                     {showForm ? "Close" : "+ New Produce"}
@@ -89,8 +90,6 @@ const ProducedInput = () => {
             {showForm && (
                 <form className="eiForm" onSubmit={handleSubmit}>
                     <div className="eiGrid">
-
-                        {/* Date */}
                         <div className="eiField">
                             <label>Date</label>
                             <input
@@ -100,7 +99,6 @@ const ProducedInput = () => {
                             />
                         </div>
 
-                        {/* Quantity */}
                         <div className="eiField">
                             <label>Quantity</label>
                             <input
@@ -111,7 +109,6 @@ const ProducedInput = () => {
                             />
                         </div>
 
-                        {/* Category */}
                         <div className="eiField">
                             <label>Category</label>
                             <select
@@ -125,7 +122,6 @@ const ProducedInput = () => {
                             </select>
                         </div>
 
-                        {/* Submit */}
                         <button
                             className="eiBtn eiBtnPrimary"
                             type="submit"
@@ -135,7 +131,9 @@ const ProducedInput = () => {
                         </button>
 
                         {error && <p style={{ color: "red" }}>{error}</p>}
-                        {feedback !== "" ? <p style={{ color: "green" }}>{feedback}</p> : null}
+                        {feedback !== "" ? (
+                            <p style={{ color: "green" }}>{feedback}</p>
+                        ) : null}
                     </div>
                 </form>
             )}

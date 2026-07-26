@@ -1,0 +1,142 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import {
+    persistAuth,
+    readToken,
+    readUser,
+    clearAuth,
+} from "./storage";
+import { validateCredentials } from "./validateInput";
+
+const AUTH_URL = `${process.env.REACT_APP_BACKEND_URI}/auth/login`;
+
+const initialUser = readUser();
+const initialToken = readToken();
+
+export const loginUser = createAsyncThunk(
+    "auth/loginUser",
+    async ({ username, password }, { rejectWithValue }) => {
+        // Defense-in-depth: re-validate on the client before the network
+        // round-trip so a tampered DOM / DevTools cannot ship garbage to
+        // the backend. The backend MUST still validate and use parameterized
+        // queries.
+        const sanitized = validateCredentials(username, password);
+        if (!sanitized.ok) {
+            return rejectWithValue({
+                kind: "client-validation",
+                errors: sanitized.errors,
+            });
+        }
+
+        try {
+            const response = await axios.post(
+                AUTH_URL,
+                {
+                    username: sanitized.username,
+                    password: sanitized.password,
+                },
+                {
+                    headers: { "Content-Type": "application/json" },
+                    timeout: 15000,
+                }
+            );
+
+            // Expected response shape:
+            // {
+            //   token: "<jwt>",
+            //   user: { id, username, role, email, ... },
+            //   expiresIn: 28800 // optional, seconds
+            // }
+            const { token, user, expiresIn } = response.data || {};
+            if (!token || !user) {
+                return rejectWithValue({
+                    kind: "server-shape",
+                    errors: ["Server returned an unexpected response."],
+                });
+            }
+
+            persistAuth({ token, user, expiresInSeconds: expiresIn });
+            return { token, user };
+        } catch (err) {
+            const status = err && err.response && err.response.status;
+            const serverMsg =
+                (err && err.response && err.response.data && err.response.data.message) ||
+                err.message ||
+                "Network error. Please try again.";
+            return rejectWithValue({
+                kind: status === 401 ? "unauthorized" : "network",
+                errors: [serverMsg],
+            });
+        }
+    }
+);
+
+export const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
+    clearAuth();
+});
+
+const authSlice = createSlice({
+    name: "auth",
+    initialState: {
+        user: initialUser || null,
+        token: initialToken || null,
+        loading: false,
+        // Per-field errors so the form can render them inline.
+        fieldErrors: { username: null, password: null, form: null },
+        // A list of all errors returned from the client validator / server.
+        errors: [],
+    },
+    reducers: {
+        clearAuthErrors(state) {
+            state.errors = [];
+            state.fieldErrors = { username: null, password: null, form: null };
+        },
+        setFieldError(state, action) {
+            const { field, message } = action.payload || {};
+            if (field && field in state.fieldErrors) {
+                state.fieldErrors[field] = message || null;
+            }
+        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(loginUser.pending, (state) => {
+                state.loading = true;
+                state.errors = [];
+                state.fieldErrors = { username: null, password: null, form: null };
+            })
+            .addCase(loginUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.token = action.payload.token;
+                state.user = action.payload.user;
+                state.errors = [];
+                state.fieldErrors = { username: null, password: null, form: null };
+            })
+            .addCase(loginUser.rejected, (state, action) => {
+                state.loading = false;
+                state.token = null;
+                state.user = null;
+                const payload = action.payload || {};
+                state.errors = payload.errors || ["Login failed."];
+                state.fieldErrors = {
+                    username: payload.kind === "client-validation" ? state.fieldErrors.username : null,
+                    password: payload.kind === "client-validation" ? state.fieldErrors.password : null,
+                    form: payload.kind && payload.kind !== "client-validation" ? (payload.errors || ["Login failed."]).join(" ") : null,
+                };
+            })
+            .addCase(logoutUser.fulfilled, (state) => {
+                state.token = null;
+                state.user = null;
+                state.errors = [];
+                state.fieldErrors = { username: null, password: null, form: null };
+            });
+    },
+});
+
+export const { clearAuthErrors, setFieldError } = authSlice.actions;
+export default authSlice.reducer;
+
+// Selectors
+export const selectAuth = (state) => state.auth;
+export const selectIsAuthenticated = (state) => Boolean(state.auth && state.auth.token);
+export const selectCurrentUser = (state) => (state.auth && state.auth.user) || null;

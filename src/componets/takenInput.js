@@ -1,15 +1,18 @@
-import { useState } from "react";
+﻿import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { authedPost } from "../auth/authedRequest";
+import { fetchTaken } from "../expenseSlice";
 import "./expenseInput.css";
 
 const DEFAULT_FORM = {
     date: "",
     qty: "",
     category: "",
-    receiver: ""
+    receiver: "",
 };
 
 const TakenInput = () => {
-    // const status = useSelector((state) => state.expenses.loading);
+    const dispatch = useDispatch();
 
     const [form, setForm] = useState(DEFAULT_FORM);
     const [showForm, setShowForm] = useState(false);
@@ -20,7 +23,7 @@ const TakenInput = () => {
     const handleChange = (field) => (e) => {
         setForm((prev) => ({
             ...prev,
-            [field]: e.target.value
+            [field]: e.target.value,
         }));
     };
 
@@ -45,30 +48,29 @@ const TakenInput = () => {
             Date: form.date,
             Qty: qty,
             Category: form.category,
-            Receiver: form.receiver
+            Receiver: form.receiver,
         };
 
         setSubmitting(true);
 
         try {
-            const res = await fetch(`${process.env.REACT_APP_BACKEND_URI}/taken/insert`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: "jsy7392#9%$ya$D!2@£$34",
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) throw new Error("Failed to save");
+            // Axios-based so the JWT interceptor attaches the Bearer token.
+            const result = await authedPost(
+                `${process.env.REACT_APP_BACKEND_URI}/taken/insert`,
+                payload
+            );
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to save");
+            }
 
             resetForm();
-            // setShowForm(false);
             setFeedback("Record Saved!");
+            // Refresh the Redux cache for the "taken" table.
+            dispatch(fetchTaken());
+
             setTimeout(() => {
                 setFeedback("");
             }, 1000);
-
         } catch (err) {
             setError(err.message);
         } finally {
@@ -104,8 +106,9 @@ const TakenInput = () => {
                         </div>
 
                         <div className="eiField">
-                            <label htmlFor="eiDate">Quantity</label>
+                            <label htmlFor="eiQty">Quantity</label>
                             <input
+                                id="eiQty"
                                 className="eiField eiFieldWide"
                                 type="number"
                                 placeholder="Qty"
@@ -128,8 +131,9 @@ const TakenInput = () => {
                         </div>
 
                         <div className="eiField">
-                            <label htmlFor="eiDate">Receiver</label>
+                            <label htmlFor="eiReceiver">Receiver</label>
                             <input
+                                id="eiReceiver"
                                 className="eiField eiFieldWide"
                                 type="text"
                                 placeholder="Receiver"
@@ -140,12 +144,16 @@ const TakenInput = () => {
 
                         <button
                             className="eiBtn eiBtnPrimary"
-                            type="submit" disabled={submitting}>
+                            type="submit"
+                            disabled={submitting}
+                        >
                             {submitting ? "Saving..." : "Save"}
                         </button>
 
                         {error && <p style={{ color: "red" }}>{error}</p>}
-                        {feedback !== "" ? <p style={{ color: "green" }}>{feedback}</p> : null}
+                        {feedback !== "" ? (
+                            <p style={{ color: "green" }}>{feedback}</p>
+                        ) : null}
                     </div>
                 </form>
             )}

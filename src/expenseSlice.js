@@ -1,22 +1,35 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+﻿import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { readToken } from "./auth/storage";
 
-const Expense_URL = `${process.env.REACT_APP_BACKEND_URI}/expense/data`;
-const Taken_URL = `${process.env.REACT_APP_BACKEND_URI}/taken/data`;
-const Drums_URL = `${process.env.REACT_APP_BACKEND_URI}/drums/data`;
-const Produced_URL = `${process.env.REACT_APP_BACKEND_URI}/dailyProduce/data`;
+// All four read endpoints (and the four POSTs in the input forms) are
+// protected by the JWT the user received on login. The axios request
+// interceptor installed by `installAxiosAuth` (see src/index.js) attaches
+// `Authorization: Bearer <jwt>` to every outgoing request automatically,
+// so we do NOT set a static `authorization` header here. We still bail
+// out early if the user is signed out so the rest of the app does not
+// have to handle "anonymous request" surprises.
+
+const EXPENSE_URL = `${process.env.REACT_APP_BACKEND_URI}/expense/data`;
+const TAKEN_URL   = `${process.env.REACT_APP_BACKEND_URI}/taken/data`;
+const DRUMS_URL   = `${process.env.REACT_APP_BACKEND_URI}/drums/data`;
+const PRODUCED_URL= `${process.env.REACT_APP_BACKEND_URI}/dailyProduce/data`;
+
+function requireAuth() {
+    if (!readToken()) {
+        const err = new Error(
+            "You are signed out. Please sign in again to load data."
+        );
+        err.code = "AUTH_REQUIRED";
+        throw err;
+    }
+}
 
 export const fetchExpenses = createAsyncThunk(
     "expenses/fetchExpenses",
     async () => {
-        const response = await axios.get(
-            Expense_URL,
-            {
-                headers:{
-                    authorization: "jsy7392#9%$ya$D!2@£$34",
-                }
-            }
-        );
+        requireAuth();
+        const response = await axios.get(EXPENSE_URL);
         return response.data;
     }
 );
@@ -24,39 +37,29 @@ export const fetchExpenses = createAsyncThunk(
 export const fetchTaken = createAsyncThunk(
     "taken/fetchExpenses",
     async () => {
-        const response = await axios.get(Taken_URL,{
-                headers:{
-                    authorization: "jsy7392#9%$ya$D!2@£$34",
-                }
-            });
-        return response.data;
-    }
-);
-export const fetchDrums = createAsyncThunk(
-    "drums/fetchExpenses",
-    async () => {
-        const response = await axios.get(Drums_URL,
-            {
-                headers:{
-                    authorization: "jsy7392#9%$ya$D!2@£$34",
-                }
-            }
-        );
-        return response.data;
-    }
-);
-export const fetchProduced = createAsyncThunk(
-    "produced/fetchExpenses",
-    async () => {
-        const response = await axios.get(Produced_URL,{
-                headers:{
-                    authorization: "jsy7392#9%$ya$D!2@£$34",
-                }
-            });
+        requireAuth();
+        const response = await axios.get(TAKEN_URL);
         return response.data;
     }
 );
 
+export const fetchDrums = createAsyncThunk(
+    "drums/fetchExpenses",
+    async () => {
+        requireAuth();
+        const response = await axios.get(DRUMS_URL);
+        return response.data;
+    }
+);
+
+export const fetchProduced = createAsyncThunk(
+    "produced/fetchExpenses",
+    async () => {
+        requireAuth();
+        const response = await axios.get(PRODUCED_URL);
+        return response.data;
+    }
+);
 
 const expenseSlice = createSlice({
     name: "expenses",
@@ -66,7 +69,7 @@ const expenseSlice = createSlice({
         drums: [],
         produced: [],
         loading: false,
-        error: null
+        error: null,
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -98,7 +101,7 @@ const expenseSlice = createSlice({
                 state.error = action.error && action.error.message;
             })
 
-            //Drums
+            // Drums
             .addCase(fetchDrums.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -112,7 +115,7 @@ const expenseSlice = createSlice({
                 state.error = action.error && action.error.message;
             })
 
-            //Sold
+            // Produced
             .addCase(fetchProduced.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -124,8 +127,8 @@ const expenseSlice = createSlice({
             .addCase(fetchProduced.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error && action.error.message;
-            })
-    }
+            });
+    },
 });
 
 export default expenseSlice.reducer;
