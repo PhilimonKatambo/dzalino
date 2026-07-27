@@ -1,11 +1,13 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     registerUser,
     clearAuthErrors,
     clearRegistrationSuccess,
     setFieldError,
     selectAuth,
+    selectIsAuthenticated,
     validateEmail,
     validateRegistration,
 } from "../../auth/authSlice";
@@ -17,14 +19,11 @@ import {
 } from "../../auth/validateInput";
 import "./register.css";
 
-// Create-account form. Mirrors the look-and-feel of `Login` so the two
-// pages feel like one continuous surface, and shares the same Redux
-// selectors / validators so a tampered DOM can't sneak past the same
-// rules the login form enforces. The backend still has to validate on
-// its own (see AUTH.md).
-
-export default function Register({ onSwitchToLogin }) {
+export default function Register() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
     const { loading, busy, errors, fieldErrors, registrationSuccess } =
         useSelector(selectAuth);
 
@@ -40,6 +39,24 @@ export default function Register({ onSwitchToLogin }) {
         dispatch(clearRegistrationSuccess());
         usernameRef.current && usernameRef.current.focus();
     }, [dispatch]);
+
+    // If the user is already authenticated, send them straight to the
+    // // dashboard rather than letting them create another account.
+    // useEffect(() => {
+    //     if (isAuthenticated) {
+    //         const redirectTo = (location.state && location.state.from) || "/";
+    //         navigate(redirectTo, { replace: true });
+    //     }
+    // }, [isAuthenticated, location.state, navigate]);
+
+    // Once the account is created without an auto-sign-in, route the user
+    // back to the login page so they can authenticate with their new
+    // credentials.
+    useEffect(() => {
+        if (registrationSuccess) {
+            navigate("/login", { replace: true });
+        }
+    }, [registrationSuccess, navigate]);
 
     const onUsernameChange = (e) => {
         const next = e.target.value;
@@ -93,9 +110,6 @@ export default function Register({ onSwitchToLogin }) {
         }
         if (!u.ok || !em.ok || !p.ok || !confirmPassword || p.value !== confirmPassword) return;
 
-        // Run the full server-side-shaped validator through the slice helper too,
-        // just so the two layers of validation stay consistent. The thunk will
-        // re-run it before it ever hits the network.
         const combined = validateRegistration({ username, email, password, confirmPassword });
         if (!combined.ok) return;
 
@@ -256,13 +270,7 @@ export default function Register({ onSwitchToLogin }) {
                     </div>
                 ) : null}
 
-                {registrationSuccess && !fieldErrors.form ? (
-                    <div className="register-form-success" role="status">
-                        Account created. You can sign in with your new credentials.
-                    </div>
-                ) : null}
-
-                {errors && errors.length && !fieldErrors.form && !registrationSuccess ? (
+                {errors && errors.length && !fieldErrors.form ? (
                     <div className="register-form-error" role="alert">
                         {errors.join(" ")}
                     </div>
@@ -279,19 +287,9 @@ export default function Register({ onSwitchToLogin }) {
 
                 <div className="register-switch">
                     Already have an account?{" "}
-                    <button
-                        type="button"
-                        className="register-switch-link"
-                        onClick={() => {
-                            dispatch(clearAuthErrors());
-                            dispatch(clearRegistrationSuccess());
-                            if (typeof onSwitchToLogin === "function") {
-                                onSwitchToLogin();
-                            }
-                        }}
-                    >
+                    <Link to="/login" className="register-switch-link">
                         Sign in
-                    </button>
+                    </Link>
                 </div>
 
                 <ul className="register-hints" aria-live="polite">

@@ -2,13 +2,6 @@
 import axios from "axios";
 import { readToken } from "./auth/storage";
 
-// All four read endpoints (and the four POSTs in the input forms) are
-// protected by the JWT the user received on login. The axios request
-// interceptor installed by `installAxiosAuth` (see src/index.js) attaches
-// `Authorization: Bearer <jwt>` to every outgoing request automatically,
-// so we do NOT set a static `authorization` header here. We still bail
-// out early if the user is signed out so the rest of the app does not
-// have to handle "anonymous request" surprises.
 
 const EXPENSE_URL = `${process.env.REACT_APP_BACKEND_URI}/expense/data`;
 const TAKEN_URL   = `${process.env.REACT_APP_BACKEND_URI}/taken/data`;

@@ -1,11 +1,12 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     loginUser,
     clearAuthErrors,
-    clearRegistrationSuccess,
     setFieldError,
     selectAuth,
+    selectIsAuthenticated,
 } from "../../auth/authSlice";
 import {
     validateUsername,
@@ -13,58 +14,36 @@ import {
     USERNAME_MIN,
     PASSWORD_MIN,
 } from "../../auth/validateInput";
-import Register from "../Register/register";
 import "./login.css";
 
-// Top-level auth surface. Renders either the Sign-in form or the
-// Create-account form, depending on which link the user clicked. The
-// two forms share the same Redux `auth` slice, so any error from one
-// is cleared before the other is shown.
+// Standalone sign-in page. No longer renders <Register /> itself; navigation
+// to the registration page is handled by react-router-dom. When the user is
+// already signed in we redirect them to the dashboard so refreshing the
+// /login route is safe.
 export default function Login() {
-    const [mode, setMode] = useState("login");
     const dispatch = useDispatch();
-    const { loading, errors, fieldErrors, registrationSuccess } =
-        useSelector(selectAuth);
-
-    useEffect(() => {
-        dispatch(clearAuthErrors());
-        dispatch(clearRegistrationSuccess());
-    }, [dispatch]);
-
-    const switchToRegister = () => {
-        dispatch(clearAuthErrors());
-        dispatch(clearRegistrationSuccess());
-        setMode("register");
-    };
-
-    const switchToLogin = () => {
-        dispatch(clearAuthErrors());
-        dispatch(clearRegistrationSuccess());
-        setMode("login");
-    };
-
-    if (mode === "register") {
-        return <Register onSwitchToLogin={switchToLogin} />;
-    }
-    return <SignInForm onSwitchToRegister={switchToRegister} />;
-}
-
-function SignInForm({ onSwitchToRegister }) {
-    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
     const { loading, errors, fieldErrors } = useSelector(selectAuth);
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const usernameRef = useRef(null);
 
     useEffect(() => {
-        // Reset any stale Redux errors when the page mounts.
         dispatch(clearAuthErrors());
         usernameRef.current && usernameRef.current.focus();
     }, [dispatch]);
 
-    // Forbid pasting emoji by accident. If the user pastes something that
-    // fails validation, we surface the error on the matching field.
+    useEffect(() => {
+        if (isAuthenticated) {
+            const redirectTo = (location.state && location.state.from) || "/";
+            navigate(redirectTo, { replace: true });
+        }
+    }, [isAuthenticated, location.state, navigate]);
+
     const handlePaste = (field, event) => {
         const text = event.clipboardData && event.clipboardData.getData("text");
         if (!text) return;
@@ -204,16 +183,12 @@ function SignInForm({ onSwitchToRegister }) {
                     {loading ? "Signing in..." : "Sign in"}
                 </button>
 
-                <div className="login-switch">
+                {/* <div className="login-switch">
                     New to dzalino?{" "}
-                    <button
-                        type="button"
-                        className="login-switch-link"
-                        onClick={onSwitchToRegister}
-                    >
+                    <Link to="/register" className="login-switch-link">
                         Create an account
-                    </button>
-                </div>
+                    </Link>
+                </div> */}
 
                 <ul className="login-hints" aria-live="polite">
                     <li>
