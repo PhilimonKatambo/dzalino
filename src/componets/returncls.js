@@ -1,0 +1,196 @@
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { authedPost } from "../auth/authedRequest";
+import { fetchTaken } from "../expenseSlice";
+import "./expenseInput.css";
+
+const DEFAULT_FORM = {
+    date: "",
+    qty: "",
+    category: "",
+    receiver: "",
+    store: "",
+    state: "",
+};
+
+const ReturnInput = () => {
+    const dispatch = useDispatch();
+
+    const [form, setForm] = useState(DEFAULT_FORM);
+    const [showForm, setShowForm] = useState(false);
+    const [feedback, setFeedback] = useState("");
+    const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+
+    const handleChange = (field) => (e) => {
+        setForm((prev) => ({
+            ...prev,
+            [field]: e.target.value,
+        }));
+    };
+
+    const resetForm = () => {
+        setForm(DEFAULT_FORM);
+        setError("");
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+
+        const qty = Number(form.qty);
+
+        if (!form.date) return setError("Date is required");
+        if (!form.category) return setError("Category is required");
+        if (!form.receiver) return setError("Receiver is required");
+        if (!Number.isFinite(qty) || qty <= 0)
+            return setError("Qty must be a positive number");
+
+        const payload = {
+            Date: form.date,
+            Qty: qty,
+            Category: form.category,
+            Receiver: form.receiver,
+            Store: form.store,
+            State: form.state,
+        };
+
+        setSubmitting(true);
+
+        try {
+            // Axios-based so the JWT interceptor attaches the Bearer token.
+            const result = await authedPost(
+                `${process.env.REACT_APP_BACKEND_URI}/returncls/insert`,
+                payload
+            );
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to save");
+            }
+
+            resetForm();
+            setFeedback("Record Saved!");
+            // Refresh the Redux cache for the "taken" table.
+            dispatch(fetchTaken());
+
+            setTimeout(() => {
+                setFeedback("");
+            }, 1000);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    return (
+        <div id="expenseInput">
+            <div className="eiHeader">
+                <div>
+                    <div className="eiTitle">Add return c/s</div>
+                    <div className="eiSubtitle">
+                        Add cls returned from sales' trips
+                    </div>
+                </div>
+                <button className="eiToggle" onClick={() => setShowForm(!showForm)}>
+                    {showForm ? "Close" : "+ New Return"}
+                </button>
+            </div>
+
+            {showForm && (
+                <form className="eiForm" onSubmit={handleSubmit}>
+                    <div className="eiGrid">
+                        <div className="eiField">
+                            <label htmlFor="eiDate">Date</label>
+                            <input
+                                id="eiDate"
+                                type="date"
+                                value={form.date}
+                                onChange={handleChange("date")}
+                            />
+                        </div>
+
+                        <div className="eiField">
+                            <label htmlFor="eiQty">Quantity</label>
+                            <input
+                                id="eiQty"
+                                className="eiField eiFieldWide"
+                                type="number"
+                                placeholder="Qty"
+                                value={form.qty}
+                                onChange={handleChange("qty")}
+                            />
+                        </div>
+
+                        <div className="eiField">
+                            <label>Category</label>
+                            <select
+                                value={form.category}
+                                onChange={handleChange("category")}
+                            >
+                                <option>Select Category</option>
+                                <option value="Nips">Nips</option>
+                                <option value="Bigs_papers">Bigs_papers</option>
+                                <option value="Bigs_cartons">Bigs_cartons</option>
+                            </select>
+                        </div>
+
+                        <div className="eiField">
+                            <label htmlFor="eiReceiver">Receiver</label>
+                            <input
+                                id="eiReceiver"
+                                className="eiField eiFieldWide"
+                                type="text"
+                                placeholder="Receiver"
+                                value={form.receiver}
+                                onChange={handleChange("receiver")}
+                            />
+                        </div>
+
+                        <div className="eiField">
+                            <label htmlFor="eiReceiver">Store</label>
+                            <select
+                                id="eiReceiver"
+                                className="eiField eiFieldWide"
+                                value={form.store}
+                                onChange={handleChange("store")}
+                            >
+                                <option>--Select store</option>
+                                <option value={"Msundwe"}>Msundwe</option>
+                                <option value={"Biwi"}>Biwi</option>
+                            </select>
+                        </div>
+
+                                                <div className="eiField">
+                            <label htmlFor="eiReceiver">Status</label>
+                            <select
+                                id="eiReceiver"
+                                className="eiField eiFieldWide"
+                                value={form.state}
+                                onChange={handleChange("state")}
+                            >
+                                <option>--Select state</option>
+                                <option value={"Taken"}>Taken</option>
+                                <option value={"Stored"}>Stored</option>
+                            </select>
+                        </div>
+
+                        <button
+                            className="eiBtn eiBtnPrimary"
+                            type="submit"
+                            disabled={submitting}
+                        >
+                            {submitting ? "Saving..." : "Save"}
+                        </button>
+
+                        {error && <p style={{ color: "red" }}>{error}</p>}
+                        {feedback !== "" ? (
+                            <p style={{ color: "green" }}>{feedback}</p>
+                        ) : null}
+                    </div>
+                </form>
+            )}
+        </div>
+    );
+};
+
+export default ReturnInput;

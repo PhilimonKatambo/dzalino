@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import "./allExpense.css";
+import axios from "axios";
 
 export const LEDGER_PAGE_SIZE = 12;
 export const PAGE_SIZE = LEDGER_PAGE_SIZE;
@@ -18,8 +19,7 @@ const DEFAULT_SORT_OPTIONS = [
 ];
 
 
-
-const LedgerTable = ({
+const LedgerTable2 = ({
     rows,
     title,
     subtitle,
@@ -91,6 +91,25 @@ const LedgerTable = ({
             .join(" - ");
     }, [summary]);
 
+
+    const [amount, setAmount] = useState("");
+    const [showPay,setShowPay] = useState(false);
+
+    const updateAmount = async (id) => {
+        try {
+            const res = await axios.put(
+                `${process.env.REACT_APP_BACKEND_URI}/balance/update/${id}`,
+                {
+                    amount: Number(amount)
+                }
+            );
+
+            console.log("Updated:", res.data);
+            setShowPay(false)
+        } catch (e) {
+            console.log(e);
+        }
+    };
     return (
         <div id="allExpense" className="ledger">
             <div className="aeHeader">
@@ -149,6 +168,7 @@ const LedgerTable = ({
                                     {col.header}
                                 </th>
                             ))}
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -160,13 +180,24 @@ const LedgerTable = ({
                             </tr>
                         ) : (
                             pageRows.map((row, i) => (
-
                                 <tr key={row._id || `${pageStart}-${i}`}>
                                     {columns.map((col) => (
                                         <td key={col.key} className={col.align === "right" ? "aeNum" : undefined}>
-                                            {col.key==="Status"?row.PaidAmount===row.Amount?"Paid":row.PaidAmount===Number(0)?"Not paid":"Not finished":renderCell(row, col)}
+                                            {col.key === "Status" ? row.PaidAmount === row.Amount ? "Paid" : row.PaidAmount === Number(0) ? "Not paid" : "Not finished" : renderCell(row, col)}
                                         </td>
                                     ))}
+
+                                    <td>
+                                        <button id="pay" style={{ backgroundColor: row.Amount === row.PaidAmount ? "#6ac196" : "#69a6bb" }} disabled={row.Amount === row.PaidAmount} onClick={()=>setShowPay(true)}>{row.Amount === row.PaidAmount ? "Paid" : "Pay"}</button>
+                                    </td>
+
+                                    {showPay && <div id="update" >
+                                        <input type="number" placeholder="Amount paid"
+                                            value={amount}
+                                            onChange={(e) => setAmount(e.target.value)}>
+                                        </input>
+                                        <button id="pay" style={{ backgroundColor: "#69a6bb" }} onClick={() => updateAmount(row._id)}>Pay</button>
+                                    </div>}
                                 </tr>
                             ))
                         )}
@@ -190,7 +221,7 @@ const LedgerTable = ({
     );
 };
 
-export default LedgerTable;
+export default LedgerTable2;
 
 const renderCell = (row, col) => {
     if (typeof col.render === "function") {

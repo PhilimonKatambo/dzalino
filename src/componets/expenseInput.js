@@ -114,9 +114,6 @@ const ExpenseInput = () => {
 
         setSubmitting(true);
         try {
-            // Goes through axios so `installAxiosAuth` attaches
-            // `Authorization: Bearer <jwt>`. No static `authorization`
-            // header is sent — the JWT is the only credential.
             const result = await authedPost(
                 `${process.env.REACT_APP_BACKEND_URI}/expense/insert`,
                 payload

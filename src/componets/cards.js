@@ -1,45 +1,181 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
-import './cards.css'
+import "./cards.css"
 
 const MONTHS = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
+const parseDate = (raw) => {
+    if (raw == null) return null;
+    if (raw instanceof Date) {
+        return isNaN(raw.getTime()) ? null : raw;
+    }
+    if (typeof raw === "number") {
+        const utcDays = Math.floor(raw - 25569);
+        const utcValue = utcDays * 86400;
+        const d = new Date(utcValue * 1000);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    if (typeof raw === "string") {
+        const s = raw.trim();
+        if (!s) return null;
+        // dd/mm/yyyy
+        const dmy = s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})/);
+        if (dmy) {
+            const day = Number(dmy[1]);
+            const month = Number(dmy[2]);
+            let year = Number(dmy[3]);
+            if (year < 100) year += 2000;
+            const d = new Date(year, month - 1, day);
+            return isNaN(d.getTime()) ? null : d;
+        }
+        const d = new Date(s);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    return null;
+};
+
 const Cards = () => {
+    const expenses = useSelector((state) => state.expenses.expenses);
+    const taken = useSelector((state) => state.expenses.taken);
+    const drums = useSelector((state) => state.expenses.drums);
+    const produced = useSelector((state) => state.expenses.produced);
+
+    // Filter controls
+    const [filterType, setFilterType] = useState("all"); // 'all', 'month', 'date'
+    const [selectedMonth, setSelectedMonth] = useState("");
+    const [selectedDate, setSelectedDate] = useState("");
+
+    // Compute distinct months and dates from expenses
+    const monthOptions = useMemo(() => {
+        const set = new Set();
+        const list = Array.isArray(expenses) ? expenses : [];
+        list.forEach((e) => {
+            const d = parseDate(e.Date);
+            if (d) {
+                const monthName = MONTHS[d.getMonth()];
+                const year = d.getFullYear();
+                set.add(`${monthName} ${year}`);
+            }
+        });
+        return ["All", ...Array.from(set).sort()];
+    }, [expenses]);
+
+    const dateOptions = useMemo(() => {
+        const set = new Set();
+        const list = Array.isArray(expenses) ? expenses : [];
+        list.forEach((e) => {
+            const d = parseDate(e.Date);
+            if (d) {
+                const str = d.toISOString().split("T")[0]; // YYYY-MM-DD
+                set.add(str);
+            }
+        });
+        return ["All", ...Array.from(set).sort()];
+    }, [expenses]);
+
+    // Filter function
+    const applyFilter = (item) => {
+        if (filterType === "all") return true;
+        const d = parseDate(item.Date);
+        if (!d) return false;
+        if (filterType === "month") {
+            const monthName = MONTHS[d.getMonth()];
+            const year = d.getFullYear();
+            return `${monthName} ${year}` === selectedMonth;
+        }
+        if (filterType === "date") {
+            const str = d.toISOString().split("T")[0];
+            return str === selectedDate;
+        }
+        return false;
+    };
+
+    const filteredExpenses = useMemo(() => {
+        const list = Array.isArray(expenses) ? expenses : [];
+        return list.filter(applyFilter);
+    }, [expenses, filterType, selectedMonth, selectedDate]);
+
+    const filteredTaken = useMemo(() => {
+        const list = Array.isArray(taken) ? taken : [];
+        return list.filter(applyFilter);
+    }, [taken, filterType, selectedMonth, selectedDate]);
+
+    const filteredDrums = useMemo(() => {
+        const list = Array.isArray(drums) ? drums : [];
+        return list.filter(applyFilter);
+    }, [drums, filterType, selectedMonth, selectedDate]);
+
+    const filteredProduced = useMemo(() => {
+        const list = Array.isArray(produced) ? produced : [];
+        return list.filter(applyFilter);
+    }, [produced, filterType, selectedMonth, selectedDate]);
+
+    // Helper
+    const list_safe = (value) => Array.isArray(value) ? value : [];
+
     return (
-        <div id="cards">
-            <TotalExpenseCard />
-            <TotalProducedCard />
-            <TotalTakenCard />
-            <TotalNipsCard />
-            <TotalBigPapersCard />
-            <TotalBigCartonCard />
-            <TotalDrumsCard />
-            <LargetExpense />
-            <AverageExpense />
-            <TopCategory />
-            <Categories />
-            {/* <CoverageDuration /> */}
+        <div id="infoCards">
+            <div className="filter-controls">
+                <div id="filter-label">
+                    <div>Filter by:</div>
+                    <select value={filterType} onChange={(e) => {
+                        setFilterType(e.target.value);
+                        if (e.target.value === "all") {
+                            setSelectedMonth("");
+                            setSelectedDate("");
+                        }
+                    }}>
+                        <option value="all">All Months</option>
+                        <option value="month">Month</option>
+                        <option value="date">Date</option>
+                    </select>
+                </div>
+                {filterType === "month" && (
+                    <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} >
+                        {monthOptions.map((m) => (
+                            <option key={m} value={m}>{m}</option>
+                        ))}
+                    </select>
+                )}
+                {filterType === "date" && (
+                    <select value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} >
+                        {dateOptions.map((d) => (
+                            <option key={d} value={d}>{d}</option>
+                        ))}
+                    </select>
+                )}
+            </div>
+            <div id="cards">
+                <TotalExpenseCard expenses={filteredExpenses} />
+                <TotalProducedCard produced={filteredProduced} taken={filteredTaken} />
+                <TotalTakenCard taken={filteredTaken} />
+                <TotalNipsCard takenList={filteredTaken} producedList={filteredProduced} />
+                <TotalBigPapersCard takenList={filteredTaken} producedList={filteredProduced} />
+                <TotalBigCartonCard takenList={filteredTaken} producedList={filteredProduced} />
+                <TotalDrumsCard drums={filteredDrums} />
+                <LargetExpense expenses={filteredExpenses} />
+                <AverageExpense expenses={filteredExpenses} />
+                <TopCategory expenses={filteredExpenses} />
+                <Categories expenses={filteredExpenses} />
+                {/* <CoverageDuration /> */}
+            </div>
         </div>
     )
-}
+};
 
-const TotalExpenseCard = () => {
-    const expenses = useSelector(
-        (state) => state.expenses.expenses
-    );
-
+const TotalExpenseCard = ({ expenses }) => {
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
         let total1 = 0;
-        list_safe(expenses).forEach(element => {
+        list_safe(expenses).forEach((element) => {
             total1 = total1 + (Number(element.Total) || 0);
         });
         setTotal(total1);
-    }, [expenses])
+    }, [expenses]);
 
     return (
         <div id="exCard">
@@ -48,14 +184,9 @@ const TotalExpenseCard = () => {
             <div id="subExp">{Number(list_safe(expenses).length).toLocaleString()} tracked records</div>
         </div>
     )
-}
+};
 
-
-const TotalTakenCard = () => {
-    const taken = useSelector(
-        (state) => state.expenses.taken
-    );
-
+const TotalTakenCard = ({ taken }) => {
     const [total, setTotal] = useState(0);
     const [totalN, setTotalN] = useState(0);
     const [totalBP, setTotalBP] = useState(0);
@@ -66,11 +197,11 @@ const TotalTakenCard = () => {
         let total1 = 0;
         let total2 = 0;
         let total3 = 0;
-        list_safe(taken).forEach(element => {
+        list_safe(taken).forEach((element) => {
             totali = totali + (Number(element.Qty) || 0);
         });
 
-        list_safe(taken).forEach(element => {
+        list_safe(taken).forEach((element) => {
             if (element.Category === "Nips") {
                 total1 = total1 + (Number(element.Qty) || 0);
             }
@@ -94,13 +225,9 @@ const TotalTakenCard = () => {
             <div id="subExp">Nips:{Number(totalN).toLocaleString()}, B-P:{Number(totalBP).toLocaleString()}, B-C:{Number(totalBC).toLocaleString()}</div>
         </div>
     )
-}
+};
 
-const TotalProducedCard = () => {
-    const taken = useSelector(
-        (state) => state.expenses.produced
-    );
-
+const TotalProducedCard = ({ produced, taken }) => {
     const [total, setTotal] = useState(0);
     const [totalN, setTotalN] = useState(0);
     const [totalBP, setTotalBP] = useState(0);
@@ -112,11 +239,11 @@ const TotalProducedCard = () => {
         let total2 = 0;
         let total3 = 0;
 
-        list_safe(taken).forEach(element => {
+        list_safe(taken).forEach((element) => {
             totali = totali + (Number(element.Qty) || 0);
         });
 
-        list_safe(taken).forEach(element => {
+        list_safe(taken).forEach((element) => {
             if (element.Category === "Nips") {
                 total1 = total1 + (Number(element.Qty) || 0);
             }
@@ -141,41 +268,29 @@ const TotalProducedCard = () => {
             <div id="subExp">Nips:{Number(totalN).toLocaleString()}, B-P:{Number(totalBP).toLocaleString()}, B-C:{Number(totalBC).toLocaleString()}</div>
         </div>
     )
-}
+};
 
-const TotalDrumsCard = () => {
-    const taken = useSelector(
-        (state) => state.expenses.drums
-    );
-
+const TotalDrumsCard = ({ drums }) => {
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
         let total1 = 0;
-        list_safe(taken).forEach(element => {
+        list_safe(drums).forEach((element) => {
             total1 = total1 + (Number(element.Qty) || 0);
         });
         setTotal(total1);
-    }, [taken])
+    }, [drums])
 
     return (
         <div id="exCard">
             <div id="word">Total Drums given</div>
             <div id="actNumber">{Number(total).toLocaleString()} drums</div>
-            <div id="subExp">{Number(list_safe(taken).length).toLocaleString()} times</div>
+            <div id="subExp">{Number(list_safe(drums).length).toLocaleString()} times</div>
         </div>
     )
-}
+};
 
-const TotalNipsCard = () => {
-    const takenList = useSelector(
-        (state) => state.expenses.taken
-    );
-
-    const producedList = useSelector(
-        (state) => state.expenses.produced
-    );
-
+const TotalNipsCard = ({ takenList, producedList }) => {
     const take = list_safe(takenList).reduce((sum, el) => {
         if (el.Category === "Nips") {
             return sum + (Number(el.Qty) || 0);
@@ -201,15 +316,7 @@ const TotalNipsCard = () => {
     );
 };
 
-const TotalBigPapersCard = () => {
-    const takenList = useSelector(
-        (state) => state.expenses.taken
-    );
-
-    const producedList = useSelector(
-        (state) => state.expenses.produced
-    );
-
+const TotalBigPapersCard = ({ takenList, producedList }) => {
     const take = list_safe(takenList).reduce((sum, el) => {
         if (el.Category === "Bigs_papers") {
             return sum + (Number(el.Qty) || 0);
@@ -235,15 +342,7 @@ const TotalBigPapersCard = () => {
     );
 };
 
-const TotalBigCartonCard = () => {
-    const takenList = useSelector(
-        (state) => state.expenses.taken
-    );
-
-    const producedList = useSelector(
-        (state) => state.expenses.produced
-    );
-
+const TotalBigCartonCard = ({ takenList, producedList }) => {
     const take = list_safe(takenList).reduce((sum, el) => {
         if (el.Category === "Bigs_cartons") {
             return sum + (Number(el.Qty) || 0);
@@ -269,20 +368,14 @@ const TotalBigCartonCard = () => {
     );
 };
 
-
-
-const LargetExpense = () => {
-    const expenses = useSelector(
-        (state) => state.expenses.expenses
-    );
-
+const LargetExpense = ({ expenses }) => {
     const [big, setBig] = useState(0);
     const [low, setLow] = useState(0);
 
     useEffect(() => {
-        const all = list_safe(expenses).map(e => Number(e.Total) || 0);
-        setBig(all.length ? Math.max(...all) : 0)
-        setLow(all.length ? Math.min(...all) : 0)
+        const all = list_safe(expenses).map((e) => Number(e.Total) || 0);
+        setBig(all.length ? Math.max(...all) : 0);
+        setLow(all.length ? Math.min(...all) : 0);
     }, [expenses])
 
     return (
@@ -292,13 +385,9 @@ const LargetExpense = () => {
             <div id="subExp">Smallest K{Number(low).toLocaleString()}</div>
         </div>
     )
-}
+};
 
-const AverageExpense = () => {
-    const expenses = useSelector(
-        (state) => state.expenses.expenses
-    );
-
+const AverageExpense = ({ expenses }) => {
     const [avg, setAvg] = useState(0);
 
     useEffect(() => {
@@ -318,13 +407,9 @@ const AverageExpense = () => {
             <div id="subExp">Mean across {Number(list_safe(expenses).length).toLocaleString()} records</div>
         </div>
     )
-}
+};
 
-const TopCategory = () => {
-    const expenses = useSelector(
-        (state) => state.expenses.expenses
-    );
-
+const TopCategory = ({ expenses }) => {
     const [top, setTop] = useState({ name: "\u2014", total: 0 });
 
     useEffect(() => {
@@ -349,21 +434,17 @@ const TopCategory = () => {
             <div id="subExp">K{Number(top.total).toLocaleString()} spent</div>
         </div>
     )
-}
+};
 
-const Categories = () => {
-    const expenses = useSelector(
-        (state) => state.expenses.expenses
-    );
-
+const Categories = ({ expenses }) => {
     const [cats, setCats] = useState([]);
 
     useEffect(() => {
         const all = [];
-        list_safe(expenses).forEach(element => {
+        list_safe(expenses).forEach((element) => {
             all.push(element.Category);
         });
-        setCats([...new Set(all)])
+        setCats([...new Set(all)]);
     }, [expenses])
 
     return (
@@ -373,113 +454,7 @@ const Categories = () => {
             <div id="subExp">All expenses</div>
         </div>
     )
-}
-
-const CoverageDuration = () => {
-    const expenses = useSelector(
-        (state) => state.expenses.expenses
-    );
-
-    const [coverage, setCoverage] = useState({
-        start: null,
-        end: null,
-        startLabel: "\u2014",
-        endLabel: "\u2014",
-        rangeLabel: "\u2014",
-        monthsCount: 0,
-        daysCount: 0
-    });
-
-    useEffect(() => {
-        calculateCoverage();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [expenses])
-
-    const parseDate = (raw) => {
-        if (raw == null) return null;
-        if (raw instanceof Date) {
-            return isNaN(raw.getTime()) ? null : raw;
-        }
-        if (typeof raw === "number") {
-            // Excel serial date
-            const utcDays = Math.floor(raw - 25569);
-            const utcValue = utcDays * 86400;
-            const d = new Date(utcValue * 1000);
-            return isNaN(d.getTime()) ? null : d;
-        }
-        if (typeof raw === "string") {
-            const s = raw.trim();
-            if (!s) return null;
-            // dd/mm/yyyy
-            const dmy = s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})/);
-            if (dmy) {
-                const day = Number(dmy[1]);
-                const month = Number(dmy[2]);
-                let year = Number(dmy[3]);
-                if (year < 100) year += 2000;
-                const d = new Date(year, month - 1, day);
-                return isNaN(d.getTime()) ? null : d;
-            }
-            const d = new Date(s);
-            return isNaN(d.getTime()) ? null : d;
-        }
-        return null;
-    };
-
-    const getDateValue = (e) => {
-        const candidates = [e.Date, e.date, e["Date "], e[" date"], e.ExpenseDate, e.expenseDate, e.createdAt, e.Day];
-        for (const c of candidates) {
-            const d = parseDate(c);
-            if (d) return d;
-        }
-        return null;
-    };
-
-    const formatMonthYear = (d) => `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-
-    const calculateCoverage = () => {
-        const list = list_safe(expenses);
-        const dates = list.map(getDateValue).filter(Boolean);
-        if (!dates.length) {
-            setCoverage({
-                start: null,
-                end: null,
-                startLabel: "\u2014",
-                endLabel: "\u2014",
-                rangeLabel: "\u2014",
-                monthsCount: 0,
-                daysCount: 0
-            });
-            return;
-        }
-        const start = dates.reduce((a, b) => (a < b ? a : b));
-        const end = dates.reduce((a, b) => (a > b ? a : b));
-        const monthsCount = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
-        const dayMs = 1000 * 60 * 60 * 24;
-        const daysCount = Math.max(0, Math.round((end - start) / dayMs) + 1);
-        setCoverage({
-            start,
-            end,
-            startLabel: formatMonthYear(start),
-            endLabel: formatMonthYear(end),
-            rangeLabel: `${formatMonthYear(start)} \u2013 ${formatMonthYear(end)}`,
-            monthsCount,
-            daysCount
-        });
-    };
-
-    return (
-        <div id="exCard">
-            <div id="word">Coverage Duration</div>
-            <div id="actNumber">{coverage.rangeLabel}</div>
-            <div id="subExp">
-                {coverage.monthsCount > 0
-                    ? `${coverage.monthsCount} month${coverage.monthsCount === 1 ? "" : "s"} \u00b7 ${coverage.daysCount} day${coverage.daysCount === 1 ? "" : "s"}`
-                    : "No dated records yet"}
-            </div>
-        </div>
-    )
-}
+};
 
 function list_safe(value) {
     return Array.isArray(value) ? value : [];

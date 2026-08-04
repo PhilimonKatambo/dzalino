@@ -1,8 +1,74 @@
-#cards{
+﻿#cards {
     width: 100%;
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 2px;
-    overflow: scroll;
-    scrollbar-width: none;
+    box-sizing: border-box;
+}
+
+#cards>div {
+    background: linear-gradient(to right, #253030, #2a3839);
+    border-radius: 2px;
+    padding: 12px;
+    min-width: 180px;
+    flex: 1 1 180px;
+    box-sizing: border-box;
+}
+
+/* #cards > div:hover{
+    background: #e9ecef;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+} */
+#exCard {
+    text-align: center;
+}
+
+#word {
+    font-size: 0.8rem;
+    color: #69a6bb;
+}
+
+#actNumber {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ced4da;
+}
+
+#subExp {
+    font-size: 0.8rem;
+    color: #868e96;
+    margin-top: 4px;
+}
+
+/* Filter controls */
+.filter-controls {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #2a3839;
+    padding: 5px 0px;
+    border-bottom: 1px solid #69a6bb;
+}
+
+#filter-label {
+    width: 100%;
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #69a6bb;
+    padding: 0px 10px;
+}
+
+.filter-controls select {
+    padding: 6px 10px;
+    border: 1px solid #69a6bb;
+    border-radius: 4px;
+    background: #69a6bb;
+}
+
+#infoCards {
+    display: flex;
+    flex-direction: column;
 }

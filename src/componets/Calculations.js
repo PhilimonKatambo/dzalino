@@ -1,4 +1,4 @@
-import { BottleWine, DollarSign, GlassWater, Package, RadioIcon, ReplaceAll, Stamp, Sticker, User2Icon } from "lucide-react"
+import { BottleWine, DollarSign, GlassWater, Package, PaperBag, RadioIcon, ReplaceAll, Stamp, Sticker, User2Icon } from "lucide-react"
 import "./calculations.css"
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
@@ -23,11 +23,11 @@ const Calculations = () => {
         let total3 = 0;
 
         produced.forEach(element => {
-            if(element.Category==="Bigs_papers"){
+            if (element.Category === "Bigs_papers") {
                 total = total + element.Qty;
-            }else if(element.Category==="Bigs_cartons"){
+            } else if (element.Category === "Bigs_cartons") {
                 total2 = total2 + element.Qty;
-            }else if(element.Category==="Nips"){
+            } else if (element.Category === "Nips") {
                 total3 = total3 + element.Qty;
             }
         });
@@ -51,16 +51,17 @@ const BigPapers = (props) => {
     const totalProduce = props.totalProduce
 
     const amount = 12
-    const cls=1
+    const cls = 1
     const rawMaterials = {
-        Bottles: [350,amount],
-        MRA_Stickers: [32,amount],
-        Stickers: [250, amount],
-        Rid: [100,amount],
-        Labour: [25,amount],
-        Ethanol: [730,amount],
-        Carton: [0,cls],
-        Other: [100,amount],
+        Bottles: [350, amount],
+        MRA_Stickers: [32, amount],
+        Stickers: [228, amount],
+        Rid: [85, amount],
+        Labour: [50, amount],
+        Ethanol: [750, amount],
+        Carton: [0, cls],
+        Pepala: [533, cls],
+        // Other: [100,amount],
     }
 
     useEffect(() => {
@@ -85,8 +86,9 @@ const BigPapers = (props) => {
         Rid: <RadioIcon size={15} />,
         Labour: <User2Icon size={15} />,
         Ethanol: <GlassWater size={15} />,
-        Carton:<Package size={15} />,
-        Other: <ReplaceAll size={15} />
+        Carton: <Package size={15} />,
+        Pepala: <PaperBag size={15} />,
+        // Other: <ReplaceAll size={15} />
     }
 
     return (
@@ -102,7 +104,7 @@ const BigPapers = (props) => {
                             </div>
                             <div id="rawLeft">
                                 <div id="eachP">K{Number(value[0]).toLocaleString()} x {Number(value[1]).toLocaleString()} = </div>
-                                <div id="totall">K{Number(value[0]*value[1]).toLocaleString()}</div>
+                                <div id="totall">K{Number(value[0] * value[1]).toLocaleString()}</div>
                             </div>
                         </div>
                     ))
@@ -140,16 +142,17 @@ const BigCartons = (props) => {
     const totalProduce = props.totalProduce
 
     const amount = 12
-    const cls=1
+    const cls = 1
     const rawMaterials = {
-        Bottles: [350,amount],
-        MRA_Stickers: [32,amount],
+        Bottles: [350, amount],
+        MRA_Stickers: [32, amount],
         Stickers: [250, amount],
-        Rid: [100,amount],
-        Labour: [25,amount],
-        Ethanol: [730,amount],
-        Carton: [100,cls],
-        Other: [100,amount],
+        Rid: [100, amount],
+        Labour: [25, amount],
+        Ethanol: [730, amount],
+        Carton: [1200, cls],
+        Pepala: [0, cls],
+        // Other: [100,amount],
     }
 
     useEffect(() => {
@@ -175,6 +178,7 @@ const BigCartons = (props) => {
         Labour: <User2Icon size={15} />,
         Ethanol: <GlassWater size={15} />,
         Carton: <Package size={15} />,
+        Pepala: <PaperBag size={15} />,
         Other: <ReplaceAll size={15} />
     }
 
@@ -192,7 +196,7 @@ const BigCartons = (props) => {
                             </div>
                             <div id="rawLeft">
                                 <div id="eachP">K{Number(value[0]).toLocaleString()} x {Number(value[1]).toLocaleString()} = </div>
-                                <div id="totall">K{Number(value[0]*value[1]).toLocaleString()}</div>
+                                <div id="totall">K{Number(value[0] * value[1]).toLocaleString()}</div>
                             </div>
                         </div>
                     ))
@@ -229,22 +233,22 @@ const Nips = (props) => {
     const [total, setTotal] = useState(0)
     const totalProduce = props.totalProduce
 
-    const amount = 24
-    const cls=1
+    const amount = 20
+    const cls = 1
     const rawMaterials = {
-        Bottles: [250,amount],
-        MRA_Stickers: [32,amount],
-        Stickers: [250, amount],
-        Rid: [30,amount],
-        Labour: [25,amount],
-        Ethanol: [650,amount],
-        Carton: [200,cls],
-        Other: [100,amount],
+        Bottles: [250, amount],
+        MRA_Stickers: [32, amount],
+        Stickers: [200, amount],
+        Rid: [120, amount],
+        Labour: [50, amount],
+        Ethanol: [560, amount],
+        Carton: [1200, cls],
+        Pepala: [0, cls],
+        // Other: [100, amount],
     }
 
     useEffect(() => {
         calculateTotal();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [totalProduce])
 
     const calculateTotal = () => {
@@ -265,7 +269,8 @@ const Nips = (props) => {
         Labour: <User2Icon size={15} />,
         Ethanol: <GlassWater size={15} />,
         Carton: <Package size={15} />,
-        Other: <ReplaceAll size={15} />
+        Pepala: <PaperBag size={15} />,
+        // Other: <ReplaceAll size={15} />
     }
 
     return (
@@ -282,7 +287,7 @@ const Nips = (props) => {
                             </div>
                             <div id="rawLeft">
                                 <div id="eachP">K{Number(value[0]).toLocaleString()} x {Number(value[1]).toLocaleString()} = </div>
-                                <div id="totall">K{Number(value[0]*value[1]).toLocaleString()}</div>
+                                <div id="totall">K{Number(value[0] * value[1]).toLocaleString()}</div>
                             </div>
                         </div>
                     ))
