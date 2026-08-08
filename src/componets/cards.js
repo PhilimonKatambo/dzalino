@@ -239,11 +239,11 @@ const TotalProducedCard = ({ produced, taken }) => {
         let total2 = 0;
         let total3 = 0;
 
-        list_safe(taken).forEach((element) => {
+        list_safe(produced).forEach((element) => {
             totali = totali + (Number(element.Qty) || 0);
         });
 
-        list_safe(taken).forEach((element) => {
+        list_safe(produced).forEach((element) => {
             if (element.Category === "Nips") {
                 total1 = total1 + (Number(element.Qty) || 0);
             }
@@ -259,7 +259,7 @@ const TotalProducedCard = ({ produced, taken }) => {
         setTotalN(total1);
         setTotalBP(total2);
         setTotalBC(total3);
-    }, [taken])
+    }, [produced,taken])
 
     return (
         <div id="exCard">

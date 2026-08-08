@@ -7,6 +7,7 @@ const EXPENSE_URL = `${process.env.REACT_APP_BACKEND_URI}/expense/data`;
 const TAKEN_URL   = `${process.env.REACT_APP_BACKEND_URI}/taken/data`;
 const DRUMS_URL   = `${process.env.REACT_APP_BACKEND_URI}/drums/data`;
 const PRODUCED_URL= `${process.env.REACT_APP_BACKEND_URI}/dailyProduce/data`;
+const TRIP_URL    = `${process.env.REACT_APP_BACKEND_URI}/trip/data`;
 
 function requireAuth() {
     if (!readToken()) {
@@ -54,6 +55,15 @@ export const fetchProduced = createAsyncThunk(
     }
 );
 
+export const fetchTrips = createAsyncThunk(
+    "trips/fetchExpenses",
+    async () => {
+        requireAuth();
+        const response = await axios.get(TRIP_URL);
+        return response.data;
+    }
+);
+
 const expenseSlice = createSlice({
     name: "expenses",
     initialState: {
@@ -61,6 +71,7 @@ const expenseSlice = createSlice({
         taken: [],
         drums: [],
         produced: [],
+        trips: [],
         loading: false,
         error: null,
     },
@@ -118,6 +129,20 @@ const expenseSlice = createSlice({
                 state.produced = action.payload;
             })
             .addCase(fetchProduced.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error && action.error.message;
+            })
+
+            // Trips
+            .addCase(fetchTrips.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchTrips.fulfilled, (state, action) => {
+                state.loading = false;
+                state.trips = action.payload;
+            })
+            .addCase(fetchTrips.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error && action.error.message;
             });

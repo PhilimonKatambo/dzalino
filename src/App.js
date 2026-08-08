@@ -1,4 +1,4 @@
-import "./App.css";
+﻿import "./App.css";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -12,7 +12,8 @@ import {
     fetchExpenses,
     fetchTaken,
     fetchDrums,
-    fetchProduced
+    fetchProduced,
+    fetchTrips
 } from "./expenseSlice";
 import { fetchBalances } from "./balancesSlice";
 import Cards from "./componets/cards";
@@ -28,6 +29,7 @@ import AllSold from "./allSold";
 import AllProduced from "./allProduced";
 import AllDrums from "./allDrums";
 import AllBalances from "./AllBalances";
+import AllTrips from "./AllTrips";
 import AuthGate from "./componets/AuthGate/AuthGate";
 import Login from "./componets/Login/login";
 import Register from "./componets/Register/register";
@@ -37,6 +39,7 @@ import { ArrowBigLeft, X } from "lucide-react";
 import $ from "jquery";
 import "jquery-ui-dist/jquery-ui";
 import BalanceInput from "./componets/BalanceInput";
+import TripInput from "./componets/tripInput";
 
 function Dashboard() {
     const dispatch = useDispatch();
@@ -45,13 +48,14 @@ function Dashboard() {
 
     useEffect(() => {
         if (showInputs && inputRef.current) {
-            // $(inputRef.current).draggable();
+            // .draggable();
         }
         dispatch(fetchExpenses());
         dispatch(fetchTaken());
         dispatch(fetchDrums());
         dispatch(fetchProduced());
         dispatch(fetchBalances());
+        dispatch(fetchTrips()); // fetch trips data
 
     }, [dispatch, showInputs]);
 
@@ -75,6 +79,7 @@ function Dashboard() {
                     <DrumsInput />
                     <ProducedInput />
                     <ReturnInput />
+                    <TripInput />
                 </div>
             }
             <Calculations />
@@ -84,6 +89,7 @@ function Dashboard() {
                 <AllProduced />
                 <AllDrums />
                 <AllBalances />
+                <AllTrips />
                 <Charts />
             </div>
         </div>
