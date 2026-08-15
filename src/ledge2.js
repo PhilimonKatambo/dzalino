@@ -93,19 +93,24 @@ const LedgerTable2 = ({
 
 
     const [amount, setAmount] = useState("");
-    const [showPay,setShowPay] = useState(false);
+    const [showPay, setShowPay] = useState(false);
+    const [id, setId] = useState("")
 
-    const updateAmount = async (id) => {
+    const updateAmount = async () => {
         try {
-            const res = await axios.put(
-                `${process.env.REACT_APP_BACKEND_URI}/balance/update/${id}`,
-                {
-                    amount: Number(amount)
-                }
-            );
+            if (id !== "") {
+                const res = await axios.put(
+                    `${process.env.REACT_APP_BACKEND_URI}/balance/update/${id}`,
+                    {
+                        amount: Number(amount)
+                    }
+                );
 
-            console.log("Updated:", res.data);
-            setShowPay(false)
+                console.log("Updated:", res.data);
+                setShowPay(false)
+            } else {
+                alert("No Row selected");
+            }
         } catch (e) {
             console.log(e);
         }
@@ -168,6 +173,7 @@ const LedgerTable2 = ({
                                     {col.header}
                                 </th>
                             ))}
+                            <th>Balance</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -186,23 +192,27 @@ const LedgerTable2 = ({
                                             {col.key === "Status" ? row.PaidAmount === row.Amount ? "Paid" : row.PaidAmount === Number(0) ? "Not paid" : "Not finished" : renderCell(row, col)}
                                         </td>
                                     ))}
-
+                                    <td><strong>{row.Amount - row.PaidAmount}</strong></td>
                                     <td>
-                                        <button id="pay" style={{ backgroundColor: row.Amount === row.PaidAmount ? "#6ac196" : "#69a6bb" }} disabled={row.Amount === row.PaidAmount} onClick={()=>setShowPay(true)}>{row.Amount === row.PaidAmount ? "Paid" : "Pay"}</button>
+                                        <button id="pay" style={{ backgroundColor: row.Amount === row.PaidAmount ? "#6ac196" : "#69a6bb" }} disabled={row.Amount === row.PaidAmount} onClick={() => {
+                                            setId(row._id);
+                                            setShowPay(true);
+                                        }}>{row.Amount === row.PaidAmount ? "Paid" : "Pay"}</button>
                                     </td>
-
-                                    {showPay && <div id="update" >
-                                        <input type="number" placeholder="Amount paid"
-                                            value={amount}
-                                            onChange={(e) => setAmount(e.target.value)}>
-                                        </input>
-                                        <button id="pay" style={{ backgroundColor: "#69a6bb" }} onClick={() => updateAmount(row._id)}>Pay</button>
-                                    </div>}
                                 </tr>
+
                             ))
                         )}
                     </tbody>
                 </table>
+
+                {showPay && <div id="update" >
+                    <input type="number" placeholder="Amount paid"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}>
+                    </input>
+                    <button id="pay" style={{ backgroundColor: "#69a6bb" }} onClick={() => updateAmount()}>Pay</button>
+                </div>}
             </div>
 
             <div className="aePager">

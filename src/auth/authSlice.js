@@ -14,11 +14,6 @@ const REGISTER_URL = `${process.env.REACT_APP_BACKEND_URI}/auth/register`;
 const initialUser = readUser();
 const initialToken = readToken();
 
-// Basic email sanity check. The backend MUST still validate; this is only
-// a defense-in-depth layer so the form can short-circuit obvious mistakes
-// before we hit the network. We intentionally keep it permissive: a real
-// RFC-5322 regex is enormous and we'd rather reject a few odd-but-valid
-// addresses than ship a half-correct regex.
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONTROL_REGEX = /[\u0000-\u001F\u007F\u200B-\u200F\u202A-\u202E\u2066-\u2069]/;
 
