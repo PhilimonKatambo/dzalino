@@ -91,7 +91,7 @@ const BalanceInput = () => {
   };
 
   return (
-      <form onSubmit={handleSubmit} noValidate className="balance-input-container">
+      <form onSubmit={handleSubmit} noValidate className="balance-input-container" id="BalanceInp">
         <div className="form-group">
           <label>Date:</label>
           <input
