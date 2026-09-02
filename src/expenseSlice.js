@@ -1,4 +1,4 @@
-﻿import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { readToken } from "./auth/storage";
 
@@ -8,6 +8,7 @@ const TAKEN_URL   = `${process.env.REACT_APP_BACKEND_URI}/taken/data`;
 const DRUMS_URL   = `${process.env.REACT_APP_BACKEND_URI}/drums/data`;
 const PRODUCED_URL= `${process.env.REACT_APP_BACKEND_URI}/dailyProduce/data`;
 const TRIP_URL    = `${process.env.REACT_APP_BACKEND_URI}/trip/data`;
+const RETURN_URL  = `${process.env.REACT_APP_BACKEND_URI}/returncls/data`;
 
 function requireAuth() {
     if (!readToken()) {
@@ -64,6 +65,15 @@ export const fetchTrips = createAsyncThunk(
     }
 );
 
+export const fetchReturns = createAsyncThunk(
+    "returns/fetchExpenses",
+    async () => {
+        requireAuth();
+        const response = await axios.get(RETURN_URL);
+        return response.data;
+    }
+);
+
 const expenseSlice = createSlice({
     name: "expenses",
     initialState: {
@@ -72,6 +82,7 @@ const expenseSlice = createSlice({
         drums: [],
         produced: [],
         trips: [],
+        returns: [],
         loading: false,
         error: null,
     },
@@ -143,6 +154,20 @@ const expenseSlice = createSlice({
                 state.trips = action.payload;
             })
             .addCase(fetchTrips.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error && action.error.message;
+            })
+
+            // Returns
+            .addCase(fetchReturns.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchReturns.fulfilled, (state, action) => {
+                state.loading = false;
+                state.returns = action.payload;
+            })
+            .addCase(fetchReturns.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error && action.error.message;
             });

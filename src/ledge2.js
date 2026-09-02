@@ -18,7 +18,6 @@ const DEFAULT_SORT_OPTIONS = [
     { value: "qty_asc", label: "Quantity - Lowest first" }
 ];
 
-
 const LedgerTable2 = ({
     rows,
     title,
@@ -91,7 +90,6 @@ const LedgerTable2 = ({
             .join(" - ");
     }, [summary]);
 
-
     const [amount, setAmount] = useState("");
     const [showPay, setShowPay] = useState(false);
     const [id, setId] = useState("")
@@ -107,7 +105,8 @@ const LedgerTable2 = ({
                 );
 
                 console.log("Updated:", res.data);
-                setShowPay(false)
+                setShowPay(false);
+                setAmount("");
             } else {
                 alert("No Row selected");
             }
@@ -115,6 +114,7 @@ const LedgerTable2 = ({
             console.log(e);
         }
     };
+
     return (
         <div id="allExpense" className="ledger">
             <div className="aeHeader">
@@ -173,14 +173,14 @@ const LedgerTable2 = ({
                                     {col.header}
                                 </th>
                             ))}
-                            <th>Balance</th>
-                            <th></th>
+                            <th className="aeNum">Balance</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {pageRows.length === 0 ? (
                             <tr>
-                                <td colSpan={columns.length} className="aeEmpty">
+                                <td colSpan={columns.length + 2} className="aeEmpty">
                                     No records match your filters.
                                 </td>
                             </tr>
@@ -192,28 +192,68 @@ const LedgerTable2 = ({
                                             {col.key === "Status" ? row.PaidAmount === row.Amount ? "Paid" : row.PaidAmount === Number(0) ? "Not paid" : "Not finished" : renderCell(row, col)}
                                         </td>
                                     ))}
-                                    <td><strong>{row.Amount - row.PaidAmount}</strong></td>
+                                    <td className="aeNum"><strong>{row.Amount - row.PaidAmount}</strong></td>
                                     <td>
-                                        <button id="pay" style={{ backgroundColor: row.Amount === row.PaidAmount ? "#6ac196" : "#69a6bb" }} disabled={row.Amount === row.PaidAmount} onClick={() => {
-                                            setId(row._id);
-                                            setShowPay(true);
-                                        }}>{row.Amount === row.PaidAmount ? "Paid" : "Pay"}</button>
+                                        <button 
+                                            className="aeBtn" 
+                                            style={{ backgroundColor: row.Amount === row.PaidAmount ? "#6ac196" : "#69a6bb", color: "#f4f6e5" }} 
+                                            disabled={row.Amount === row.PaidAmount} 
+                                            onClick={() => {
+                                                setId(row._id);
+                                                setShowPay(true);
+                                            }}
+                                        >
+                                            {row.Amount === row.PaidAmount ? "Paid" : "Pay"}
+                                        </button>
                                     </td>
                                 </tr>
-
                             ))
                         )}
                     </tbody>
                 </table>
-
-                {showPay && <div id="update" >
-                    <input type="number" placeholder="Amount paid"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}>
-                    </input>
-                    <button id="pay" style={{ backgroundColor: "#69a6bb" }} onClick={() => updateAmount()}>Pay</button>
-                </div>}
             </div>
+
+            {showPay && (
+                <div style={{
+                    position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: "rgba(0,0,0,0.7)", display: "flex", 
+                    justifyContent: "center", alignItems: "center", zIndex: 1000
+                }}>
+                    <div style={{
+                        background: "#253030", padding: "20px", borderRadius: "8px",
+                        border: "1px solid #69a6bb", color: "#f4f6e5", minWidth: "300px"
+                    }}>
+                        <h3 style={{ marginTop: 0, color: "#69a6bb" }}>Payment Update</h3>
+                        <p style={{ fontSize: "0.8rem", color: "#98a087", marginBottom: "15px" }}>
+                            Enter the amount to be paid.
+                        </p>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                            <input 
+                                type="number" 
+                                placeholder="Amount paid"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                style={{
+                                    padding: "10px", background: "#1f2a2b", color: "#f4f6e5",
+                                    border: "1px solid #3a4a4f", borderRadius: "4px"
+                                }}
+                                autoFocus
+                            />
+                            <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                                <button 
+                                    onClick={() => setShowPay(false)}
+                                    className="aeBtn"
+                                >Cancel</button>
+                                <button 
+                                    onClick={updateAmount}
+                                    className="aeBtn" 
+                                    style={{ backgroundColor: "#69a6bb", color: "#f4f6e5", borderColor: "#69a6bb" }}
+                                >Pay</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="aePager">
                 <div className="aePagerInfo">

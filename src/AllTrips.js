@@ -1,9 +1,11 @@
-﻿// Ledger for the trip records. The styling, search, sort, and paging are
+// Ledger for the trip records. The styling, search, sort, and paging are
 // shared with the other ledgers via ./ledgerTable.
 
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import LedgerTable, { LEDGER_PAGE_SIZE } from "./ledgerTable";
+import { authedPost } from "./auth/authedRequest";
+import { fetchTrips } from "./expenseSlice";
 
 const columns = [
     { key: "Date", header: "Date", date: true, search: true },
@@ -29,11 +31,50 @@ const columns = [
         align: "right",
         numeric: true,
         compare: (a, b) => (Number(b.BigsClsQty) || 0) - (Number(a.BigsClsQty) || 0)
+    },
+    { 
+        key: "Status", 
+        header: "Status", 
+        search: true,
+        render: (row) => <span className="aeBadge">{row.Status || "Away"}</span>
     }
 ];
 
 const AllTrips = () => {
-    const trips = useSelector((state) => state.expenses.trips); // assuming we added trips to expense slice
+    const dispatch = useDispatch();
+    const trips = useSelector((state) => state.expenses.trips);
+
+    const handleStatusChange = async (id, newState) => {
+        try {
+            const result = await authedPost(
+                `${process.env.REACT_APP_BACKEND_URI}/trip/updatedata`,
+                { _id: id, Status: newState }
+            );
+            if (!result.ok) {
+                alert(`Error updating status: ${result.error}`);
+            } else {
+                dispatch(fetchTrips());
+            }
+        } catch (err) {
+            alert(`Network error: ${err.message}`);
+        }
+    };
+
+    const tableColumns = [...columns, {
+        key: "Action",
+        header: "Change Status",
+        align: "right",
+        render: (row) => (
+            <select 
+                className="aeStatusSelect"
+                value={row.Status || "Away"} 
+                onChange={(e) => handleStatusChange(row._id, e.target.value)}
+            >
+                <option value="Away">Away</option>
+                <option value="Returned">Returned</option>
+            </select>
+        )
+    }];
 
     const totals = useMemo(() => {
         const list = Array.isArray(trips) ? trips : [];
@@ -60,7 +101,7 @@ const AllTrips = () => {
             subtitle="Every trip record from the backend"
             searchFields={["Date", "Taker", "RoadLocation", "_id"]}
             categoryField="Taker"
-            columns={columns}
+            columns={tableColumns}
             summary={[
                 { label: "", value: `${totals.count.toLocaleString()} record${totals.count === 1 ? "" : "s"} - ` },
                 { label: "", value: `${totals.sumNips.toLocaleString()} total nips - ` },
@@ -73,4 +114,3 @@ const AllTrips = () => {
 
 export default AllTrips;
 export { LEDGER_PAGE_SIZE };
-

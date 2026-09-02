@@ -1,4 +1,4 @@
-﻿import "./App.css";
+import "./App.css";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -13,7 +13,8 @@ import {
     fetchTaken,
     fetchDrums,
     fetchProduced,
-    fetchTrips
+    fetchTrips,
+    fetchReturns
 } from "./expenseSlice";
 import { fetchBalances } from "./balancesSlice";
 import Cards from "./componets/cards";
@@ -30,6 +31,7 @@ import AllProduced from "./allProduced";
 import AllDrums from "./allDrums";
 import AllBalances from "./AllBalances";
 import AllTrips from "./AllTrips";
+import AllReturn from "./allReturn";
 import AuthGate from "./componets/AuthGate/AuthGate";
 import Login from "./componets/Login/login";
 import Register from "./componets/Register/register";
@@ -48,14 +50,26 @@ function Dashboard() {
 
     useEffect(() => {
         if (showInputs && inputRef.current) {
-            // .draggable();
+            // Use a small timeout to ensure DOM is fully painted and jQuery UI is attached
+            const timer = setTimeout(() => {
+                if (inputRef.current && $.fn && $.fn.draggable) {
+                    $(inputRef.current).draggable({
+                        handle: ".eiHeader",
+                        containment: "window"
+                    });
+                } else {
+                    console.error("jQuery UI draggable not loaded yet");
+                }
+            }, 50);
+            return () => clearTimeout(timer);
         }
         dispatch(fetchExpenses());
         dispatch(fetchTaken());
         dispatch(fetchDrums());
         dispatch(fetchProduced());
         dispatch(fetchBalances());
-        dispatch(fetchTrips()); // fetch trips data
+        dispatch(fetchTrips());
+        dispatch(fetchReturns());
 
     }, [dispatch, showInputs]);
 
@@ -90,6 +104,7 @@ function Dashboard() {
                 <AllDrums />
                 <AllBalances />
                 <AllTrips />
+                <AllReturn />
                 <Charts />
             </div>
         </div>

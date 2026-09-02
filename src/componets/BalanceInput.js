@@ -1,197 +1,199 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { authedPost } from "../auth/authedRequest";
 import "./BalanceInput.css";
 
+const DEFAULT_FORM = {
+    date: "",
+    amount: "",
+    qty: "",
+    debtor: "",
+    witness: "",
+    location: "",
+    paidAmount: "",
+};
+
 const BalanceInput = () => {
-  const dispatch = useDispatch();
-  const [date, setDate] = useState("");
-  const [amount, setAmount] = useState("");
-  const [qty, setQty] = useState("");
-  const [debtor, setDebtor] = useState("");
-  const [witness, setWitness] = useState("");
-  const [location, setLocation] = useState("");
-  const [paidAmount, setPaidAmount] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [submitError, setSubmitError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+    const dispatch = useDispatch();
+    const [form, setForm] = useState(DEFAULT_FORM);
+    const [showForm, setShowForm] = useState(false);
+    const [feedback, setFeedback] = useState("");
+    const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFeedback("");
-    setSubmitError("");
-
-    if (!date) {
-      setSubmitError("Date is required.");
-      return;
-    }
-    const amountNum = parseFloat(amount);
-    if (isNaN(amountNum) || amountNum < 0) {
-      setSubmitError("Amount must be a non-negative number.");
-      return;
-    }
-    const qtyNum = parseInt(qty, 10);
-    if (isNaN(qtyNum) || qtyNum < 0) {
-      setSubmitError("Quantity must be a non-negative integer.");
-      return;
-    }
-    if (!debtor.trim()) {
-      setSubmitError("Debtor is required.");
-      return;
-    }
-    if (!witness.trim()) {
-      setSubmitError("Witness is required.");
-      return;
-    }
-    if (!location.trim()) {
-      setSubmitError("Location is required.");
-      return;
-    }
-    const paidAmountNum = parseFloat(paidAmount);
-    if (isNaN(paidAmountNum) || paidAmountNum < 0) {
-      setSubmitError("Paid amount must be a non-negative number.");
-      return;
-    }
-
-    const payload = {
-      Date: date,
-      Amount: amountNum,
-      Qty: qtyNum,
-      Debtor: debtor.trim(),
-      Witness: witness.trim(),
-      Location: location.trim(),
-      PaidAmount: paidAmountNum,
+    const handleChange = (field) => (e) => {
+        setForm((prev) => ({
+            ...prev,
+            [field]: e.target.value,
+        }));
     };
 
-    setSubmitting(true);
-    try {
-      const result = await authedPost(
-        `${process.env.REACT_APP_BACKEND_URI}/balance/insert`,
-        payload
-      );
+    const resetForm = () => {
+        setForm(DEFAULT_FORM);
+        setError("");
+    };
 
-      if (!result.ok) {
-        throw new Error(result.error || "Failed to save balance entry.");
-      }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
 
-      setFeedback("Balance entry saved!");
-      setDate("");
-      setAmount("");
-      setQty("");
-      setDebtor("");
-      setWitness("");
-      setLocation("");
-      setPaidAmount("");
+        if (!form.date) return setError("Date is required");
+        if (!form.debtor.trim()) return setError("Debtor is required");
+        if (!form.witness.trim()) return setError("Witness is required");
+        if (!form.location.trim()) return setError("Location is required");
+        
+        const amountNum = parseFloat(form.amount);
+        if (isNaN(amountNum) || amountNum < 0) return setError("Amount must be a positive number");
+        
+        const qtyNum = parseInt(form.qty, 10);
+        if (isNaN(qtyNum) || qtyNum < 0) return setError("Qty must be a positive number");
+        
+        const paidAmountNum = parseFloat(form.paidAmount);
+        if (isNaN(paidAmountNum) || paidAmountNum < 0) return setError("Paid amount must be a positive number");
 
-    } catch (err) {
-      setSubmitError((err && err.message) || "Failed to save balance entry.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+        const payload = {
+            Date: form.date,
+            Amount: amountNum,
+            Qty: qtyNum,
+            Debtor: form.debtor.trim(),
+            Witness: form.witness.trim(),
+            Location: form.location.trim(),
+            PaidAmount: paidAmountNum,
+        };
 
-  return (
-      <form onSubmit={handleSubmit} noValidate className="balance-input-container" id="BalanceInp">
-        <div className="form-group">
-          <label>Date:</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Amount:</label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Qty:</label>
-          <input
-            type="number"
-            min="0"
-            value={qty}
-            onChange={(e) => setQty(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Debtor:</label>
-          <input
-            type="text"
-            value={debtor}
-            onChange={(e) => setDebtor(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Witness:</label>
-          <input
-            type="text"
-            value={witness}
-            onChange={(e) => setWitness(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Location:</label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Paid Amount:</label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={paidAmount}
-            onChange={(e) => setPaidAmount(e.target.value)}
-            required
-          />
-        </div>
+        setSubmitting(true);
+        try {
+            const result = await authedPost(
+                `${process.env.REACT_APP_BACKEND_URI}/balance/insert`,
+                payload
+            );
 
-        {submitError && <div className="eiAlert eiAlertError">{submitError}</div>}
-        {feedback && <div className="eiAlert eiAlertSuccess">{feedback}</div>}
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to save balance entry");
+            }
 
-        <div className="eiActions">
-          <button
-            type="button"
-            className="eiBtn eiBtnGhost"
-            onClick={() => {
-              setDate("");
-              setAmount("");
-              setQty("");
-              setDebtor("");
-              setWitness("");
-              setLocation("");
-              setPaidAmount("");
-              setFeedback("");
-              setSubmitError("");
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="eiBtn eiBtnPrimary"
-            disabled={submitting}
-          >
-            {submitting ? "Saving..." : "Submit Balance"}
-          </button>
+            resetForm();
+            setFeedback("Balance entry saved!");
+            setTimeout(() => setFeedback(""), 1000);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    return (
+        <div id="expenseInput">
+            <div className="eiHeader">
+                <div>
+                    <div className="eiTitle">Add Balance Pay</div>
+                    <div className="eiSubtitle">
+                        Record balance payments and debts
+                    </div>
+                </div>
+                <button className="eiToggle" onClick={() => setShowForm(!showForm)}>
+                    {showForm ? "Close" : "+ New Balance"}
+                </button>
+            </div>
+
+            {showForm && (
+                <form className="eiForm" onSubmit={handleSubmit}>
+                    <div className="eiGrid">
+                        <div className="eiField">
+                            <label htmlFor="biDate">Date</label>
+                            <input
+                                id="biDate"
+                                type="date"
+                                value={form.date}
+                                onChange={handleChange("date")}
+                            />
+                        </div>
+
+                        <div className="eiField">
+                            <label htmlFor="biAmount">Amount</label>
+                            <input
+                                id="biAmount"
+                                type="number"
+                                step="0.01"
+                                placeholder="Amount"
+                                value={form.amount}
+                                onChange={handleChange("amount")}
+                            />
+                        </div>
+
+                        <div className="eiField">
+                            <label htmlFor="biQty">Quantity</label>
+                            <input
+                                id="biQty"
+                                type="number"
+                                placeholder="Qty"
+                                value={form.qty}
+                                onChange={handleChange("qty")}
+                            />
+                        </div>
+
+                        <div className="eiField">
+                            <label htmlFor="biDebtor">Debtor</label>
+                            <input
+                                id="biDebtor"
+                                type="text"
+                                placeholder="Debtor Name"
+                                value={form.debtor}
+                                onChange={handleChange("debtor")}
+                            />
+                        </div>
+
+                        <div className="eiField">
+                            <label htmlFor="biWitness">Witness</label>
+                            <input
+                                id="biWitness"
+                                type="text"
+                                placeholder="Witness Name"
+                                value={form.witness}
+                                onChange={handleChange("witness")}
+                            />
+                        </div>
+
+                        <div className="eiField">
+                            <label htmlFor="biLocation">Location</label>
+                            <input
+                                id="biLocation"
+                                type="text"
+                                placeholder="Location"
+                                value={form.location}
+                                onChange={handleChange("location")}
+                            />
+                        </div>
+
+                        <div className="eiField">
+                            <label htmlFor="biPaid">Paid Amount</label>
+                            <input
+                                id="biPaid"
+                                type="number"
+                                step="0.01"
+                                placeholder="Paid Amount"
+                                value={form.paidAmount}
+                                onChange={handleChange("paidAmount")}
+                            />
+                        </div>
+
+                        <button
+                            className="eiBtn eiBtnPrimary"
+                            type="submit"
+                            disabled={submitting}
+                        >
+                            {submitting ? "Saving..." : "Save Balance"}
+                        </button>
+
+                        {error && <p style={{ color: "red" }}>{error}</p>}
+                        {feedback !== "" && (
+                            <p style={{ color: "green" }}>{feedback}</p>
+                        )}
+                    </div>
+                </form>
+            )}
         </div>
-      </form>
-  );
+    );
 };
 
 export default BalanceInput;

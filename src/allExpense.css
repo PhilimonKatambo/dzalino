@@ -181,3 +181,21 @@ th{
     font-size: 0.8rem;
     padding: 0 6px;
 }
+
+.aeStatusSelect {
+    background: #1f2a2b;
+    color: #f4f6e5;
+    border: 1px solid #3a4a4f;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.aeStatusSelect:focus {
+    border-color: #69a6bb;
+}
+.aeStatusSelect:hover {
+    border-color: #69a6bb;
+}
