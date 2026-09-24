@@ -1,4 +1,4 @@
-.authgate-shell {
+﻿.authgate-shell {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -58,4 +58,25 @@
     justify-content: space-between;
     align-items: center;
     width: fit-content;
+}
+
+.authgate-nav {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.authgate-nav a {
+    color: #f8fafc;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.authgate-nav a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #69a6bb;
 }

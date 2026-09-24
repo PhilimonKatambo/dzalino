@@ -1,4 +1,4 @@
-import { BottleWine, DollarSign, GlassWater, Package, PaperBag, RadioIcon, ReplaceAll, Stamp, Sticker, User2Icon } from "lucide-react"
+﻿import { BottleWine, DollarSign, GlassWater, Package, PaperBag, RadioIcon, ReplaceAll, Stamp, Sticker, User2Icon } from "lucide-react"
 import "./calculations.css"
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
@@ -78,7 +78,6 @@ const BigPapers = (props) => {
     }
 
 
-
     const Icons = {
         Bottles: <BottleWine size={15} />,
         MRA_Stickers: <Stamp size={15} />,
@@ -92,44 +91,44 @@ const BigPapers = (props) => {
     }
 
     return (
-        <div id="calcuLeft">
-            <div id="calcuTt">Big papers:</div>
-            <div id="calcuCont">
+        <div className="calcuLeft">
+            <div className="calcuTt">Big papers:</div>
+            <div className="calcuCont">
                 {
                     Object.entries(rawMaterials).map(([key, value]) => (
-                        <div id="raww" key={key}>
-                            <div id="rawLeft">
+                        <div className="raww" key={key}>
+                            <div className="rawLeft">
                                 {Icons[key]}
-                                <div id="rawName">{key}:</div>
+                                <div className="rawName">{key}:</div>
                             </div>
-                            <div id="rawLeft">
-                                <div id="eachP">K{Number(value[0]).toLocaleString()} x {Number(value[1]).toLocaleString()} = </div>
-                                <div id="totall">K{Number(value[0] * value[1]).toLocaleString()}</div>
+                            <div className="rawLeft">
+                                <div className="eachP">K{Number(value[0]).toLocaleString()} x {Number(value[1]).toLocaleString()} = </div>
+                                <div className="totall">K{Number(value[0] * value[1]).toLocaleString()}</div>
                             </div>
                         </div>
                     ))
                 }
 
-                <div id="raww">
-                    <div id="rawLeft" style={{ fontWeight: "600" }}>
+                <div className="raww">
+                    <div className="rawLeft" style={{ fontWeight: "600" }}>
                         <DollarSign size={15} />
-                        <div id="rawName" >Total:</div>
+                        <div className="rawName" >Total:</div>
                     </div>
-                    <div id="rawLeft" style={{ fontWeight: "600" }}>
-                        <div id="eachP">x {amount} =</div>
-                        <div id="totall">K{Number(total).toLocaleString()}</div>
+                    <div className="rawLeft" style={{ fontWeight: "600" }}>
+                        <div className="eachP">x {amount} =</div>
+                        <div className="totall">K{Number(total).toLocaleString()}</div>
                     </div>
                 </div>
 
-                <div id="calcuTt" style={{ marginTop: "20px", fontSize: ".9rem" }}>Total Expense X Total Produce:</div>
-                <div id="raww" >
-                    <div id="rawLeft" style={{ fontWeight: "bold" }}>
+                <div className="calcuTt" style={{ marginTop: "20px", fontSize: ".9rem" }}>Total Expense X Total Produce:</div>
+                <div className="raww" >
+                    <div className="rawLeft" style={{ fontWeight: "bold" }}>
                         <DollarSign size={15} />
-                        <div id="rawName" >{Number(total).toLocaleString()} x {Number(totalProduce).toLocaleString()}</div>
+                        <div className="rawName" >{Number(total).toLocaleString()} x {Number(totalProduce).toLocaleString()}</div>
                     </div>
-                    <div id="rawLeft" style={{ fontWeight: "bold" }}>
+                    <div className="rawLeft" style={{ fontWeight: "bold" }}>
                         {/* <div id="eachP">x {amount} =</div> */}
-                        <div id="totall" style={{ fontWeight: "900" }}>K{Number(total * totalProduce).toLocaleString()}</div>
+                        <div className="totall" style={{ fontWeight: "900" }}>K{Number(total * totalProduce).toLocaleString()}</div>
                     </div>
                 </div>
             </div>
@@ -169,7 +168,6 @@ const BigCartons = (props) => {
     }
 
 
-
     const Icons = {
         Bottles: <BottleWine size={15} />,
         MRA_Stickers: <Stamp size={15} />,
@@ -184,44 +182,44 @@ const BigCartons = (props) => {
 
     return (
 
-        <div id="calcuLeft">
-            <div id="calcuTt">Big Cartons:</div>
-            <div id="calcuCont">
+        <div className="calcuLeft">
+            <div className="calcuTt">Big Cartons:</div>
+            <div className="calcuCont">
                 {
                     Object.entries(rawMaterials).map(([key, value]) => (
-                        <div id="raww" key={key}>
-                            <div id="rawLeft">
+                        <div className="raww" key={key}>
+                            <div className="rawLeft">
                                 {Icons[key]}
-                                <div id="rawName">{key}:</div>
+                                <div className="rawName">{key}:</div>
                             </div>
-                            <div id="rawLeft">
-                                <div id="eachP">K{Number(value[0]).toLocaleString()} x {Number(value[1]).toLocaleString()} = </div>
-                                <div id="totall">K{Number(value[0] * value[1]).toLocaleString()}</div>
+                            <div className="rawLeft">
+                                <div className="eachP">K{Number(value[0]).toLocaleString()} x {Number(value[1]).toLocaleString()} = </div>
+                                <div className="totall">K{Number(value[0] * value[1]).toLocaleString()}</div>
                             </div>
                         </div>
                     ))
                 }
 
-                <div id="raww">
-                    <div id="rawLeft" style={{ fontWeight: "600" }}>
+                <div className="raww">
+                    <div className="rawLeft" style={{ fontWeight: "600" }}>
                         <DollarSign size={15} />
-                        <div id="rawName" >Total:</div>
+                        <div className="rawName" >Total:</div>
                     </div>
-                    <div id="rawLeft" style={{ fontWeight: "600" }}>
-                        <div id="eachP">x {amount} =</div>
-                        <div id="totall">K{Number(total).toLocaleString()}</div>
+                    <div className="rawLeft" style={{ fontWeight: "600" }}>
+                        <div className="eachP">x {amount} =</div>
+                        <div className="totall">K{Number(total).toLocaleString()}</div>
                     </div>
                 </div>
 
-                <div id="calcuTt" style={{ marginTop: "20px", fontSize: ".9rem" }}>Total Expense X Total Produce:</div>
-                <div id="raww" >
-                    <div id="rawLeft" style={{ fontWeight: "bold" }}>
+                <div className="calcuTt" style={{ marginTop: "20px", fontSize: ".9rem" }}>Total Expense X Total Produce:</div>
+                <div className="raww" >
+                    <div className="rawLeft" style={{ fontWeight: "bold" }}>
                         <DollarSign size={15} />
-                        <div id="rawName" >{Number(total).toLocaleString()} x {Number(totalProduce).toLocaleString()}</div>
+                        <div className="rawName" >{Number(total).toLocaleString()} x {Number(totalProduce).toLocaleString()}</div>
                     </div>
-                    <div id="rawLeft" style={{ fontWeight: "bold" }}>
+                    <div className="rawLeft" style={{ fontWeight: "bold" }}>
                         {/* <div id="eachP">x {amount} =</div> */}
-                        <div id="totall" style={{ fontWeight: "900" }}>K{Number(total * totalProduce).toLocaleString()}</div>
+                        <div className="totall" style={{ fontWeight: "900" }}>K{Number(total * totalProduce).toLocaleString()}</div>
                     </div>
                 </div>
             </div>
@@ -260,7 +258,6 @@ const Nips = (props) => {
     }
 
 
-
     const Icons = {
         Bottles: <BottleWine size={15} />,
         MRA_Stickers: <Stamp size={15} />,
@@ -275,51 +272,49 @@ const Nips = (props) => {
 
     return (
 
-        <div id="calcuLeft">
-            <div id="calcuTt">Nips:</div>
-            <div id="calcuCont">
+        <div className="calcuLeft">
+            <div className="calcuTt">Big Cartons:</div>
+            <div className="calcuCont">
                 {
                     Object.entries(rawMaterials).map(([key, value]) => (
-                        <div id="raww" key={key}>
-                            <div id="rawLeft">
+                        <div className="raww" key={key}>
+                            <div className="rawLeft">
                                 {Icons[key]}
-                                <div id="rawName">{key}:</div>
+                                <div className="rawName">{key}:</div>
                             </div>
-                            <div id="rawLeft">
-                                <div id="eachP">K{Number(value[0]).toLocaleString()} x {Number(value[1]).toLocaleString()} = </div>
-                                <div id="totall">K{Number(value[0] * value[1]).toLocaleString()}</div>
+                            <div className="rawLeft">
+                                <div className="eachP">K{Number(value[0]).toLocaleString()} x {Number(value[1]).toLocaleString()} = </div>
+                                <div className="totall">K{Number(value[0] * value[1]).toLocaleString()}</div>
                             </div>
                         </div>
                     ))
                 }
 
-                <div id="raww">
-                    <div id="rawLeft" style={{ fontWeight: "600" }}>
+                <div className="raww">
+                    <div className="rawLeft" style={{ fontWeight: "600" }}>
                         <DollarSign size={15} />
-                        <div id="rawName" >Total:</div>
-                    </div>
-                    <div id="rawLeft" style={{ fontWeight: "600" }}>
-                        <div id="eachP">x {amount} =</div>
-                        <div id="totall">K{Number(total).toLocaleString()}</div>
+                        <div className="rawName" >Total:</div>
+                        </div>
+                    <div className="rawLeft" style={{ fontWeight: "600" }}>
+                        <div className="eachP">x {amount} =</div>
+                        <div className="totall">K{Number(total).toLocaleString()}</div>
                     </div>
                 </div>
 
-                <div id="calcuTt" style={{ marginTop: "20px", fontSize: ".9rem" }}>Total Expense X Total Produce:</div>
-                <div id="raww" >
-                    <div id="rawLeft" style={{ fontWeight: "bold" }}>
+                <div className="calcuTt" style={{ marginTop: "20px", fontSize: ".9rem" }}>Total Expense X Total Produce:</div>
+                <div className="raww" >
+                    <div className="rawLeft" style={{ fontWeight: "bold" }}>
                         <DollarSign size={15} />
-                        <div id="rawName" >{Number(total).toLocaleString()} x {Number(totalProduce).toLocaleString()}</div>
+                        <div className="rawName" >{Number(total).toLocaleString()} x {Number(totalProduce).toLocaleString()}</div>
                     </div>
-                    <div id="rawLeft" style={{ fontWeight: "bold" }}>
+                    <div className="rawLeft" style={{ fontWeight: "bold" }}>
                         {/* <div id="eachP">x {amount} =</div> */}
-                        <div id="totall" style={{ fontWeight: "900" }}>K{Number(total * totalProduce).toLocaleString()}</div>
+                        <div className="totall" style={{ fontWeight: "900" }}>K{Number(total * totalProduce).toLocaleString()}</div>
                     </div>
                 </div>
             </div>
         </div>
     )
 }
-
-
 
 export default Calculations

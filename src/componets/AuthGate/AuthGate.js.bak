@@ -1,4 +1,4 @@
-﻿import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
     logoutUser,
     selectAuth,
@@ -43,15 +43,6 @@ export default function AuthGate({ children }) {
                         <span className="authgate-user-name">Signed in</span>
                     )}
                 </div>
-
-                <nav className="authgate-nav">
-                    <a href="#infoCards">Overview</a>
-                    <a href="#allExpense2">Expenses</a>
-                    <a href="#charts">Analytics</a>
-                    <a href="#tripInput">Trips</a>
-                    <a href="#expenseInput">Inputs</a>
-                </nav>
-
                 <div id="butts">
                     <button
                         type="button"
