@@ -5,7 +5,7 @@ import {
     selectIsAuthenticated,
 } from "../../auth/authSlice";
 import "./AuthGate.css";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 // AuthGate is the layout that wraps the dashboard once the user is signed
 // in. Routing is handled by react-router-dom in App.js: when the visitor is
@@ -27,46 +27,50 @@ export default function AuthGate({ children }) {
     return (
         <div className="authgate-shell">
             <header className="authgate-header">
-                <div className="authgate-user">
-                    {user && user.username ? (
-                        <>
-                            <span className="authgate-user-name">
-                                {user.username}
-                            </span>
-                            {user.role ? (
-                                <span className="authgate-user-role">
-                                    {user.role}
-                                </span>
-                            ) : null}
-                        </>
-                    ) : (
-                        <span className="authgate-user-name">Signed in</span>
-                    )}
-                </div>
+                <NavLink className="authgate-brand" to="/" aria-label="Dzalino dashboard">
+                    <span className="authgate-brand-mark">D</span>
+                    <span className="authgate-brand-copy">
+                        <strong>Dzalino</strong>
+                        <span>Operations</span>
+                    </span>
+                </NavLink>
 
-                <nav className="authgate-nav">
-                    <a href="#infoCards">Overview</a>
-                    <a href="#allExpense2">Expenses</a>
-                    <a href="#charts">Analytics</a>
-                    <a href="#tripInput">Trips</a>
-                    <a href="#expenseInput">Inputs</a>
+                <nav className="authgate-nav" aria-label="Main navigation">
+                    <NavLink to="/" end>Overview</NavLink>
+                    <NavLink to="/transactions">Transactions</NavLink>
+                    <NavLink to="/analytics">Analytics</NavLink>
                 </nav>
 
-                <div id="butts">
-                    <button
-                        type="button"
-                        className="authgate-logout"
-                        onClick={() => navigate("/register")}
-                    >
-                        Add User
-                    </button>
-                    <button
-                        type="button"
-                        className="authgate-logout"
-                        onClick={() => dispatch(logoutUser())}
-                    >
-                        Sign out
-                    </button>
+                <div className="authgate-account">
+                    <div className="authgate-user">
+                        <span className="authgate-avatar" aria-hidden="true">
+                            {(user && user.username ? user.username : "U").slice(0, 1).toUpperCase()}
+                        </span>
+                        <span className="authgate-user-details">
+                            <span className="authgate-user-name">
+                                {user && user.username ? user.username : "Signed in"}
+                            </span>
+                            {user && user.role ? (
+                                <span className="authgate-user-role">{user.role}</span>
+                            ) : null}
+                        </span>
+                    </div>
+                    <div id="butts">
+                        <button
+                            type="button"
+                            className="authgate-logout authgate-add-user"
+                            onClick={() => navigate("/register")}
+                        >
+                            Add user
+                        </button>
+                        <button
+                            type="button"
+                            className="authgate-logout"
+                            onClick={() => dispatch(logoutUser())}
+                        >
+                            Sign out
+                        </button>
+                    </div>
                 </div>
             </header>
             <main className="authgate-main">{children}</main>

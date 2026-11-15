@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import "./cards.css"
 
@@ -48,11 +48,16 @@ const Cards = () => {
     const [selectedMonth, setSelectedMonth] = useState("");
     const [selectedDate, setSelectedDate] = useState("");
 
-    // Compute distinct months and dates from expenses
+    const activity = useMemo(() => {
+        return [expenses, taken, drums, produced].flatMap((list) =>
+            Array.isArray(list) ? list.filter(Boolean) : []
+        );
+    }, [expenses, taken, drums, produced]);
+
+    // Include every operational record so inventory-only periods are filterable.
     const monthOptions = useMemo(() => {
         const set = new Set();
-        const list = Array.isArray(expenses) ? expenses : [];
-        list.forEach((e) => {
+        activity.forEach((e) => {
             const d = parseDate(e.Date);
             if (d) {
                 const monthName = MONTHS[d.getMonth()];
@@ -60,25 +65,31 @@ const Cards = () => {
                 set.add(`${monthName} ${year}`);
             }
         });
-        return ["All", ...Array.from(set).sort()];
-    }, [expenses]);
+        const sorted = Array.from(set).sort((a, b) => {
+            const dateA = new Date(`${a.split(" ")[0]} 1, ${a.split(" ")[1]}`);
+            const dateB = new Date(`${b.split(" ")[0]} 1, ${b.split(" ")[1]}`);
+            return dateB - dateA;
+        });
+        return ["All", ...sorted];
+    }, [activity]);
 
     const dateOptions = useMemo(() => {
         const set = new Set();
-        const list = Array.isArray(expenses) ? expenses : [];
-        list.forEach((e) => {
+        activity.forEach((e) => {
             const d = parseDate(e.Date);
             if (d) {
                 const str = d.toISOString().split("T")[0]; // YYYY-MM-DD
                 set.add(str);
             }
         });
-        return ["All", ...Array.from(set).sort()];
-    }, [expenses]);
+        return ["All", ...Array.from(set).sort((a, b) => b.localeCompare(a))];
+    }, [activity]);
 
     // Filter function
-    const applyFilter = (item) => {
+    const applyFilter = useCallback((item) => {
         if (filterType === "all") return true;
+        if (filterType === "month" && !selectedMonth) return true;
+        if (filterType === "date" && !selectedDate) return true;
         const d = parseDate(item.Date);
         if (!d) return false;
         if (filterType === "month") {
@@ -91,37 +102,37 @@ const Cards = () => {
             return str === selectedDate;
         }
         return false;
-    };
+    }, [filterType, selectedDate, selectedMonth]);
 
     const filteredExpenses = useMemo(() => {
         const list = Array.isArray(expenses) ? expenses : [];
         return list.filter(applyFilter);
-    }, [expenses, filterType, selectedMonth, selectedDate]);
+    }, [expenses, applyFilter]);
 
     const filteredTaken = useMemo(() => {
         const list = Array.isArray(taken) ? taken : [];
         return list.filter(applyFilter);
-    }, [taken, filterType, selectedMonth, selectedDate]);
+    }, [taken, applyFilter]);
 
     const filteredDrums = useMemo(() => {
         const list = Array.isArray(drums) ? drums : [];
         return list.filter(applyFilter);
-    }, [drums, filterType, selectedMonth, selectedDate]);
+    }, [drums, applyFilter]);
 
     const filteredProduced = useMemo(() => {
         const list = Array.isArray(produced) ? produced : [];
         return list.filter(applyFilter);
-    }, [produced, filterType, selectedMonth, selectedDate]);
-
-    // Helper
-    const list_safe = (value) => Array.isArray(value) ? value : [];
+    }, [produced, applyFilter]);
 
     return (
         <div id="infoCards">
             <div className="filter-controls">
-                <div id="filter-label">
-                    <div>Filter by:</div>
-                    <select value={filterType} onChange={(e) => {
+                <div className="filter-label">
+                    <div>
+                        <span className="filter-title">Reporting period</span>
+                        <span className="filter-description">Update the snapshot below</span>
+                    </div>
+                    <select aria-label="Filter dashboard by" value={filterType} onChange={(e) => {
                         setFilterType(e.target.value);
                         if (e.target.value === "all") {
                             setSelectedMonth("");
@@ -134,16 +145,16 @@ const Cards = () => {
                     </select>
                 </div>
                 {filterType === "month" && (
-                    <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} >
+                    <select aria-label="Select month" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} >
                         {monthOptions.map((m) => (
-                            <option key={m} value={m}>{m}</option>
+                            <option key={m} value={m === "All" ? "" : m}>{m === "All" ? "All months" : m}</option>
                         ))}
                     </select>
                 )}
                 {filterType === "date" && (
-                    <select value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} >
+                    <select aria-label="Select date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} >
                         {dateOptions.map((d) => (
-                            <option key={d} value={d}>{d}</option>
+                            <option key={d} value={d === "All" ? "" : d}>{d === "All" ? "All dates" : d}</option>
                         ))}
                     </select>
                 )}
@@ -178,10 +189,10 @@ const TotalExpenseCard = ({ expenses }) => {
     }, [expenses]);
 
     return (
-        <div id="exCard">
-            <div id="word">Total Spend</div>
-            <div id="actNumber">K{Number(total).toLocaleString()}.00</div>
-            <div id="subExp">{Number(list_safe(expenses).length).toLocaleString()} tracked records</div>
+        <div className="metric-card">
+            <div className="metric-label">Total Spend</div>
+            <div className="metric-value">K{Number(total).toLocaleString()}.00</div>
+            <div className="metric-note">{Number(list_safe(expenses).length).toLocaleString()} tracked records</div>
         </div>
     )
 };
@@ -219,10 +230,10 @@ const TotalTakenCard = ({ taken }) => {
     }, [taken])
 
     return (
-        <div id="exCard">
-            <div id="word">Total c/s Sold</div>
-            <div id="actNumber">{Number(total).toLocaleString()} c/s</div>
-            <div id="subExp">Nips:{Number(totalN).toLocaleString()}, B-P:{Number(totalBP).toLocaleString()}, B-C:{Number(totalBC).toLocaleString()}</div>
+        <div className="metric-card">
+            <div className="metric-label">Total c/s Sold</div>
+            <div className="metric-value">{Number(total).toLocaleString()} c/s</div>
+            <div className="metric-note">Nips:{Number(totalN).toLocaleString()}, B-P:{Number(totalBP).toLocaleString()}, B-C:{Number(totalBC).toLocaleString()}</div>
         </div>
     )
 };
@@ -262,10 +273,10 @@ const TotalProducedCard = ({ produced, taken }) => {
     }, [produced,taken])
 
     return (
-        <div id="exCard">
-            <div id="word">Total c/s Produced</div>
-            <div id="actNumber">{Number(total).toLocaleString()} C/s</div>
-            <div id="subExp">Nips:{Number(totalN).toLocaleString()}, B-P:{Number(totalBP).toLocaleString()}, B-C:{Number(totalBC).toLocaleString()}</div>
+        <div className="metric-card">
+            <div className="metric-label">Total c/s Produced</div>
+            <div className="metric-value">{Number(total).toLocaleString()} c/s</div>
+            <div className="metric-note">Nips:{Number(totalN).toLocaleString()}, B-P:{Number(totalBP).toLocaleString()}, B-C:{Number(totalBC).toLocaleString()}</div>
         </div>
     )
 };
@@ -282,10 +293,10 @@ const TotalDrumsCard = ({ drums }) => {
     }, [drums])
 
     return (
-        <div id="exCard">
-            <div id="word">Total Drums given</div>
-            <div id="actNumber">{Number(total).toLocaleString()} drums</div>
-            <div id="subExp">{Number(list_safe(drums).length).toLocaleString()} times</div>
+        <div className="metric-card">
+            <div className="metric-label">Total Drums given</div>
+            <div className="metric-value">{Number(total).toLocaleString()} drums</div>
+            <div className="metric-note">{Number(list_safe(drums).length).toLocaleString()} times</div>
         </div>
     )
 };
@@ -308,10 +319,10 @@ const TotalNipsCard = ({ takenList, producedList }) => {
     const total = prod - take;
 
     return (
-        <div id="exCard">
-            <div id="word">Nips c/s remaining</div>
-            <div id="actNumber">{total.toLocaleString()} c/s</div>
-            <div id="subExp">Prod: {prod} - {take}: Taken</div>
+        <div className="metric-card">
+            <div className="metric-label">Nips c/s remaining</div>
+            <div className="metric-value">{total.toLocaleString()} c/s</div>
+            <div className="metric-note">Prod: {prod} - {take}: Taken</div>
         </div>
     );
 };
@@ -334,10 +345,10 @@ const TotalBigPapersCard = ({ takenList, producedList }) => {
     const total = prod - take;
 
     return (
-        <div id="exCard">
-            <div id="word">Big Papers c/s remaining</div>
-            <div id="actNumber">{total.toLocaleString()} c/s</div>
-            <div id="subExp">Prod: {prod} - {take}: Taken</div>
+        <div className="metric-card">
+            <div className="metric-label">Big Papers c/s remaining</div>
+            <div className="metric-value">{total.toLocaleString()} c/s</div>
+            <div className="metric-note">Prod: {prod} - {take}: Taken</div>
         </div>
     );
 };
@@ -360,10 +371,10 @@ const TotalBigCartonCard = ({ takenList, producedList }) => {
     const total = prod - take;
 
     return (
-        <div id="exCard">
-            <div id="word">Big Cartons c/s remaining</div>
-            <div id="actNumber">{total.toLocaleString()} c/s</div>
-            <div id="subExp">Prod: {prod} - {take}: Taken</div>
+        <div className="metric-card">
+            <div className="metric-label">Big Cartons c/s remaining</div>
+            <div className="metric-value">{total.toLocaleString()} c/s</div>
+            <div className="metric-note">Prod: {prod} - {take}: Taken</div>
         </div>
     );
 };
@@ -379,10 +390,10 @@ const LargetExpense = ({ expenses }) => {
     }, [expenses])
 
     return (
-        <div id="exCard">
-            <div id="word">Largest Expense</div>
-            <div id="actNumber">K{Number(big).toLocaleString()}.00</div>
-            <div id="subExp">Smallest K{Number(low).toLocaleString()}</div>
+        <div className="metric-card">
+            <div className="metric-label">Largest Expense</div>
+            <div className="metric-value">K{Number(big).toLocaleString()}.00</div>
+            <div className="metric-note">Smallest K{Number(low).toLocaleString()}</div>
         </div>
     )
 };
@@ -401,10 +412,10 @@ const AverageExpense = ({ expenses }) => {
     }, [expenses])
 
     return (
-        <div id="exCard">
-            <div id="word">Average Expense</div>
-            <div id="actNumber">K{Number(avg).toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
-            <div id="subExp">Mean across {Number(list_safe(expenses).length).toLocaleString()} records</div>
+        <div className="metric-card">
+            <div className="metric-label">Average Expense</div>
+            <div className="metric-value">K{Number(avg).toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+            <div className="metric-note">Mean across {Number(list_safe(expenses).length).toLocaleString()} records</div>
         </div>
     )
 };
@@ -428,10 +439,10 @@ const TopCategory = ({ expenses }) => {
     }, [expenses])
 
     return (
-        <div id="exCard">
-            <div id="word">Top Category</div>
-            <div id="actNumber">{top.name}</div>
-            <div id="subExp">K{Number(top.total).toLocaleString()} spent</div>
+        <div className="metric-card">
+            <div className="metric-label">Top Category</div>
+            <div className="metric-value">{top.name}</div>
+            <div className="metric-note">K{Number(top.total).toLocaleString()} spent</div>
         </div>
     )
 };
@@ -448,10 +459,10 @@ const Categories = ({ expenses }) => {
     }, [expenses])
 
     return (
-        <div id="exCard">
-            <div id="word">Categories</div>
-            <div id="actNumber">{Number(cats.length).toLocaleString()}</div>
-            <div id="subExp">All expenses</div>
+        <div className="metric-card">
+            <div className="metric-label">Categories</div>
+            <div className="metric-value">{Number(cats.length).toLocaleString()}</div>
+            <div className="metric-note">All expenses</div>
         </div>
     )
 };

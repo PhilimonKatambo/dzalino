@@ -1,5 +1,5 @@
 import "./App.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
     BrowserRouter,
@@ -7,6 +7,7 @@ import {
     Route,
     Routes,
     useLocation,
+    Outlet,
 } from "react-router-dom";
 import {
     fetchExpenses,
@@ -37,76 +38,137 @@ import Login from "./componets/Login/login";
 import Register from "./componets/Register/register";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "./auth/authSlice";
-import { ArrowBigLeft, X } from "lucide-react";
-import $ from "jquery";
-import "jquery-ui-dist/jquery-ui";
+import { Plus, X } from "lucide-react";
 import BalanceInput from "./componets/BalanceInput";
 import TripInput from "./componets/tripInput";
 
-function Dashboard() {
-    const dispatch = useDispatch();
-    const [showInputs, setShowInputs] = useState(false)
-    const inputRef = useRef(null)
+function Dashboard({ page }) {
+    const [showInputs, setShowInputs] = useState(false);
 
     useEffect(() => {
-        if (showInputs && inputRef.current) {
-            // Use a small timeout to ensure DOM is fully painted and jQuery UI is attached
-            const timer = setTimeout(() => {
-                if (inputRef.current && $.fn && $.fn.draggable) {
-                    $(inputRef.current).draggable({
-                        handle: ".eiHeader",
-                        containment: "window"
-                    });
-                } else {
-                    console.error("jQuery UI draggable not loaded yet");
-                }
-            }, 50);
-            return () => clearTimeout(timer);
-        }
-        dispatch(fetchExpenses());
-        dispatch(fetchTaken());
-        dispatch(fetchDrums());
-        dispatch(fetchProduced());
-        dispatch(fetchBalances());
-        dispatch(fetchTrips());
-        dispatch(fetchReturns());
+        if (!showInputs) return undefined;
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") setShowInputs(false);
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [showInputs]);
 
-    }, [dispatch, showInputs]);
+    const pageDetails = {
+        overview: { eyebrow: "OPERATIONS OVERVIEW", title: "Inventory overview" },
+        transactions: { eyebrow: "RECORDS MANAGEMENT", title: "Transaction records" },
+        analytics: { eyebrow: "REPORTING", title: "Expense analytics" }
+    }[page];
 
     return (
         <div id="home">
-            <button id="float" onClick={() => {
-                setShowInputs(prev => !prev)
-            }}>
-                {
-                    showInputs ? <X /> : <ArrowBigLeft />
-                }
-                {/* <div>Input</div> */}
-            </button>
-             
-            <Cards />
-            <BalanceInput />
-            {
-                showInputs && <div id="expenses" style={{}} ref={inputRef}>
-                    <ExpenseInput />
-                    <TakenInput />
-                    <DrumsInput />
-                    <ProducedInput />
-                    <ReturnInput />
-                    <TripInput />
+            <section className="dashboard-intro">
+                <div className="dashboard-intro-copy">
+                    <div className="section-eyebrow">{pageDetails.eyebrow}</div>
+                    <h1 id="page-title">{pageDetails.title}</h1>
                 </div>
-            }
-            <Calculations />
-            <div id="downExp">
-                <AllExpense />
-                <AllSold />
-                <AllProduced />
-                <AllDrums />
-                <AllBalances />
-                <AllTrips />
-                <AllReturn />
-                <Charts />
-            </div>
+                <div className="dashboard-intro-actions">
+                    <span className="dashboard-date">
+                        {new Date().toLocaleDateString(undefined, {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric"
+                        })}
+                    </span>
+                    <button
+                        type="button"
+                        className="primary-action"
+                        onClick={() => setShowInputs(true)}
+                    >
+                        <Plus size={18} />
+                        New transaction
+                    </button>
+                </div>
+            </section>
+
+            {page === "overview" && (
+                <>
+                    <section className="dashboard-section" aria-labelledby="overview-title">
+                        <div className="section-heading">
+                            <div>
+                                <h2 id="overview-title">Business snapshot</h2>
+                            </div>
+                        </div>
+                        <Cards />
+                    </section>
+                    <section className="dashboard-section" aria-labelledby="overview-production-title">
+                        <div className="section-heading">
+                            <div>
+                                <h2 id="overview-production-title">Production cost model</h2>
+                            </div>
+                        </div>
+                        <Calculations />
+                    </section>
+                </>
+            )}
+
+            {page === "transactions" && (
+                <section className="dashboard-section" aria-label="Transaction records">
+                    <div id="downExp">
+                        <AllExpense />
+                        <AllSold />
+                        <AllProduced />
+                        <AllDrums />
+                        <AllBalances />
+                        <AllTrips />
+                        <AllReturn />
+                    </div>
+                </section>
+            )}
+
+            {page === "analytics" && (
+                <section className="dashboard-section" aria-label="Analytics">
+                    <Charts />
+                </section>
+            )}
+
+            {showInputs && (
+                <div
+                    className="entry-modal-backdrop"
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) setShowInputs(false);
+                    }}
+                >
+                    <section
+                        id="expenses"
+                        className="entry-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="entry-modal-title"
+                    >
+                        <div className="entry-modal-header">
+                            <div>
+                                <div className="section-eyebrow">QUICK ENTRY</div>
+                                <h2 id="entry-modal-title">Add a transaction</h2>
+                                <p>Choose a record type to expand its entry form.</p>
+                            </div>
+                            <button
+                                type="button"
+                                className="icon-button"
+                                aria-label="Close transaction entry"
+                                onClick={() => setShowInputs(false)}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="entry-modal-content">
+                            <ExpenseInput />
+                            <TakenInput />
+                            <DrumsInput />
+                            <ProducedInput />
+                            <ReturnInput />
+                            <TripInput />
+                            <BalanceInput />
+                        </div>
+                    </section>
+                </div>
+            )}
         </div>
     );
 }
@@ -116,7 +178,19 @@ function Dashboard() {
 // can return them there after they sign in.
 function ProtectedDashboard() {
     const isAuthenticated = useSelector(selectIsAuthenticated);
+    const dispatch = useDispatch();
     const location = useLocation();
+
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        dispatch(fetchExpenses());
+        dispatch(fetchTaken());
+        dispatch(fetchDrums());
+        dispatch(fetchProduced());
+        dispatch(fetchBalances());
+        dispatch(fetchTrips());
+        dispatch(fetchReturns());
+    }, [dispatch, isAuthenticated]);
 
     if (!isAuthenticated) {
         return <Navigate to="/login" replace state={{ from: location.pathname }} />;
@@ -124,7 +198,7 @@ function ProtectedDashboard() {
 
     return (
         <AuthGate>
-            <Dashboard />
+            <Outlet />
         </AuthGate>
     );
 }
@@ -135,7 +209,11 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/" element={<ProtectedDashboard />} />
+                <Route path="/" element={<ProtectedDashboard />}>
+                    <Route index element={<Dashboard page="overview" />} />
+                    <Route path="transactions" element={<Dashboard page="transactions" />} />
+                    <Route path="analytics" element={<Dashboard page="analytics" />} />
+                </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>

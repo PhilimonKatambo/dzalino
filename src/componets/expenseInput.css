@@ -1,10 +1,12 @@
-#expenseInput{
-    background: linear-gradient(to right,#253030,#2a3839);
-    border-radius: 2px;
-    padding: 10px;
+.entryFormCard {
+    min-width: 0;
+    background: #253030;
+    border: 1px solid #354548;
+    border-radius: 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
 }
 
 .eiHeader{
@@ -16,9 +18,9 @@
 }
 
 .eiTitle{
-    color: #69a6bb;
+    color: #f4f6e5;
     font-weight: 600;
-    font-size: .8rem;
+    font-size: .95rem;
 }
 
 .eiSubtitle{
@@ -30,8 +32,8 @@
     background: #1f2a2b;
     color: #f4f6e5;
     border: 1px solid #3a4a4f;
-    border-radius: 4px;
-    padding: 8px 14px;
+    border-radius: 8px;
+    padding: 8px 12px;
     cursor: pointer;
     font: inherit;
     font-size: 0.9rem;
@@ -78,8 +80,8 @@
     background: #1f2a2b;
     color: #f4f6e5;
     border: 1px solid #3a4a4f;
-    border-radius: 4px;
-    padding: 8px 10px;
+    border-radius: 7px;
+    padding: 10px 11px;
     font: inherit;
     outline: none;
     width: 100%;
@@ -136,7 +138,7 @@
 }
 
 .eiBtn{
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 8px 16px;
     cursor: pointer;
     font: inherit;
@@ -187,6 +189,10 @@
 .eiStatus{
     color: #98a087;
     font-size: 0.8rem;
+}
+
+.eiForm > div > p {
+    margin: 0;
 }
 
 @media (max-width: 720px) {

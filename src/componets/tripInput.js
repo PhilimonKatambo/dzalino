@@ -1,6 +1,7 @@
 ﻿import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { authedPost } from "../auth/authedRequest";
+import { fetchTrips } from "../expenseSlice";
 import "./expenseInput.css";
 
 const DEFAULT_FORM = {
@@ -76,8 +77,7 @@ const TripInput = () => {
 
             resetForm();
             setFeedback("Trip entry saved!");
-            // If there is a trips slice, dispatch refresh here
-            // dispatch(fetchTrips());
+            dispatch(fetchTrips());
 
             setTimeout(() => {
                 setFeedback("");
@@ -90,7 +90,7 @@ const TripInput = () => {
     };
 
     return (
-        <div id="tripInput">
+        <div className="entryFormCard">
             <div className="eiHeader">
                 <div>
                     <div className="eiTitle">Add Trip Entry</div>
@@ -105,8 +105,9 @@ const TripInput = () => {
                 <form className="eiForm" onSubmit={handleSubmit}>
                     <div className="eiGrid">
                         <div className="eiField">
-                            <label>Date</label>
+                            <label htmlFor="tripDate">Date</label>
                             <input
+                                id="tripDate"
                                 type="date"
                                 value={form.date}
                                 onChange={handleChange("date")}
@@ -114,8 +115,9 @@ const TripInput = () => {
                         </div>
 
                         <div className="eiField">
-                            <label>Taker</label>
+                            <label htmlFor="tripTaker">Taker</label>
                             <input
+                                id="tripTaker"
                                 type="text"
                                 value={form.taker}
                                 onChange={handleChange("taker")}
@@ -123,8 +125,9 @@ const TripInput = () => {
                         </div>
 
                         <div className="eiField">
-                            <label>Road Location</label>
+                            <label htmlFor="tripRoadLocation">Road Location</label>
                             <input
+                                id="tripRoadLocation"
                                 type="text"
                                 value={form.roadLocation}
                                 onChange={handleChange("roadLocation")}
@@ -132,8 +135,9 @@ const TripInput = () => {
                         </div>
 
                         <div className="eiField">
-                            <label>Nips Qty</label>
+                            <label htmlFor="tripNipsQty">Nips Qty</label>
                             <input
+                                id="tripNipsQty"
                                 type="number"
                                 min="0"
                                 value={form.nips_qty}
@@ -142,8 +146,9 @@ const TripInput = () => {
                         </div>
 
                         <div className="eiField">
-                            <label>Bigs Papers Qty</label>
+                            <label htmlFor="tripBigsPapersQty">Bigs Papers Qty</label>
                             <input
+                                id="tripBigsPapersQty"
                                 type="number"
                                 min="0"
                                 value={form.bigs_papers_qty}
@@ -152,8 +157,9 @@ const TripInput = () => {
                         </div>
 
                         <div className="eiField">
-                            <label>Bigs Cls Qty</label>
+                            <label htmlFor="tripBigsClsQty">Bigs Cls Qty</label>
                             <input
+                                id="tripBigsClsQty"
                                 type="number"
                                 min="0"
                                 value={form.bigs_cls_qty}

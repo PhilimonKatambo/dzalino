@@ -1,82 +1,215 @@
-﻿.authgate-shell {
+.authgate-shell {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    background: #324b52;
 }
 
 .authgate-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) auto minmax(230px, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 6px clamp(14px, 2vw, 30px);
+    background: #253030;
+    border-bottom: 1px solid rgba(105, 166, 187, 0.32);
+}
+
+.authgate-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    color: #f4f6e5;
+    text-decoration: none;
+}
+
+.authgate-brand-mark {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    background: #69a6bb;
+    color: #1f2a2b;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.authgate-brand-copy,
+.authgate-user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.authgate-brand-copy strong {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+.authgate-brand-copy span {
+    margin-top: 1px;
+    color: #98a087;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.authgate-nav {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 24px;
-    background: linear-gradient(to right, #253030, #2a3839);;
-    color: #f8fafc;
-    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.18);
-    border-bottom: 1px solid #2a3839;
+    gap: 0;
+    align-self: stretch;
+}
+
+.authgate-nav a {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px 6px;
+    border: 1px solid rgba(105, 166, 187, 0.12);
+    border-bottom: 2px solid transparent;
+    background: #2a3839;
+    color: #b7c0b9;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color 140ms ease, color 140ms ease;
+}
+
+.authgate-nav a:hover,
+.authgate-nav a:focus-visible,
+.authgate-nav a.active {
+    border-bottom-color: #69a6bb;
+    background: #324b52;
+    color: #69a6bb;
+}
+
+.authgate-account {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 .authgate-user {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 14px;
+    gap: 9px;
+    min-width: 0;
 }
 
-.authgate-user-name {
+.authgate-avatar {
+    display: grid;
+    place-items: center;
+    flex: 0 0 28px;
+    height: 28px;
+    border: 1px solid rgba(105, 166, 187, 0.35);
+    border-radius: 50%;
+    background: #2a3839;
+    color: #69a6bb;
+    font-size: 11px;
     font-weight: 700;
 }
 
-.authgate-user-role {
-    padding: 2px 8px;
-    border-radius: 999px;
-    background: #69a6bb;
-    color: #1e2935;
+.authgate-user-name {
+    max-width: 120px;
+    overflow: hidden;
+    color: #f4f6e5;
     font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.authgate-user-role {
+    margin-top: 2px;
+    color: #98a087;
+    font-size: 10px;
+    text-transform: capitalize;
+}
+
+#butts {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .authgate-logout {
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid #334155;
+    padding: 6px 8px;
+    border: 1px solid #3a4a4f;
+    border-radius: 4px;
     background: transparent;
-    color: #f8fafc;
+    color: #d3d9d1;
+    font: inherit;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 120ms ease, border-color 120ms ease;
+    transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 
 .authgate-logout:hover {
-    background: #69a6bb;
-    border-color: #667995;
-}
-
-#butts{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: fit-content;
-}
-
-.authgate-nav {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-}
-
-.authgate-nav a {
-    color: #f8fafc;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 6px 12px;
-    border-radius: 4px;
-    transition: background 0.2s, color 0.2s;
-}
-
-.authgate-nav a:hover {
-    background: rgba(255, 255, 255, 0.1);
+    border-color: #69a6bb;
+    background: rgba(105, 166, 187, 0.1);
     color: #69a6bb;
+}
+
+.authgate-add-user {
+    border-color: rgba(105, 166, 187, 0.45);
+    color: #69a6bb;
+}
+
+.authgate-main {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+@media (max-width: 980px) {
+    .authgate-header {
+        grid-template-columns: 1fr auto;
+        gap: 0 14px;
+    }
+
+    .authgate-nav {
+        grid-row: 2;
+        grid-column: 1 / -1;
+        justify-content: center;
+        border-top: 1px solid rgba(105, 166, 187, 0.12);
+        padding-top: 3px;
+    }
+
+    .authgate-account {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .authgate-header {
+        padding: 7px 12px;
+    }
+
+    .authgate-brand-copy,
+    .authgate-user-details,
+    .authgate-add-user {
+        display: none;
+    }
+
+    .authgate-account {
+        gap: 8px;
+    }
+
+    .authgate-nav {
+        justify-content: flex-start;
+        gap: 0;
+        overflow-x: auto;
+    }
+
+    .authgate-nav a {
+        flex: 0 0 auto;
+        padding: 6px 9px 5px;
+        font-size: 11px;
+    }
+
 }

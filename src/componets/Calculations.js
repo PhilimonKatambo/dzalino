@@ -53,14 +53,15 @@ const BigPapers = (props) => {
     const amount = 12
     const cls = 1
     const rawMaterials = {
-        Bottles: [350, amount],
+        Bottles: [320, amount],
         MRA_Stickers: [32, amount],
-        Stickers: [228, amount],
+        Stickers: [130, amount],
         Rid: [85, amount],
         Labour: [50, amount],
-        Ethanol: [750, amount],
+        Ethanol: [470, amount],
         Carton: [0, cls],
-        Pepala: [533, cls],
+        Pepala: [350, cls],
+        Pepala_bottom: [200, cls],
         // Other: [100,amount],
     }
 
@@ -143,14 +144,15 @@ const BigCartons = (props) => {
     const amount = 12
     const cls = 1
     const rawMaterials = {
-        Bottles: [350, amount],
+        Bottles: [320, amount],
         MRA_Stickers: [32, amount],
-        Stickers: [250, amount],
-        Rid: [100, amount],
+        Stickers: [130, amount],
+        Rid: [85, amount],
         Labour: [25, amount],
-        Ethanol: [730, amount],
+        Ethanol: [470, amount],
         Carton: [1200, cls],
         Pepala: [0, cls],
+        Pepala_bottom: [0, cls],
         // Other: [100,amount],
     }
 
@@ -236,12 +238,13 @@ const Nips = (props) => {
     const rawMaterials = {
         Bottles: [250, amount],
         MRA_Stickers: [32, amount],
-        Stickers: [200, amount],
-        Rid: [120, amount],
+        Stickers: [100, amount],
+        Rid: [85, amount],
         Labour: [50, amount],
-        Ethanol: [560, amount],
-        Carton: [1200, cls],
+        Ethanol: [350, amount],
+        Carton: [1400, cls],
         Pepala: [0, cls],
+        Pepala_bottom: [0, cls],
         // Other: [100, amount],
     }
 
@@ -273,7 +276,7 @@ const Nips = (props) => {
     return (
 
         <div className="calcuLeft">
-            <div className="calcuTt">Big Cartons:</div>
+            <div className="calcuTt">Nips:</div>
             <div className="calcuCont">
                 {
                     Object.entries(rawMaterials).map(([key, value]) => (

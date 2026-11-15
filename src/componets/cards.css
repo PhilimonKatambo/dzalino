@@ -1,74 +1,154 @@
-﻿#cards {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-    box-sizing: border-box;
-}
-
-#cards>div {
-    background: linear-gradient(to right, #253030, #2a3839);
-    border-radius: 2px;
-    padding: 12px;
-    min-width: 180px;
-    flex: 1 1 180px;
-    box-sizing: border-box;
-}
-
-/* #cards > div:hover{
-    background: #e9ecef;
-    transform: translateY(-2px);
-    transition: all 0.2s ease;
-} */
-#exCard {
-    text-align: center;
-}
-
-#word {
-    font-size: 0.8rem;
-    color: #69a6bb;
-}
-
-#actNumber {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #ced4da;
-}
-
-#subExp {
-    font-size: 0.8rem;
-    color: #868e96;
-    margin-top: 4px;
-}
-
-/* Filter controls */
-.filter-controls {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background-color: #2a3839;
-    padding: 5px 0px;
-    border-bottom: 1px solid #69a6bb;
-}
-
-#filter-label {
-    width: 100%;
-    display:flex;
-    align-items: center;
-    justify-content: space-between;
-    color: #69a6bb;
-    padding: 0px 10px;
-}
-
-.filter-controls select {
-    padding: 6px 10px;
-    border: 1px solid #69a6bb;
-    border-radius: 4px;
-    background: #69a6bb;
-}
-
 #infoCards {
     display: flex;
     flex-direction: column;
+    gap: 0;
+}
+
+.filter-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 42px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(105, 166, 187, 0.22);
+    background: #253030;
+}
+
+.filter-label {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: #f4f6e5;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.filter-label > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.filter-title {
+    color: #f4f6e5;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.filter-description {
+    color: #98a087;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.filter-controls select {
+    min-width: 130px;
+    min-height: 30px;
+    padding: 0 25px 0 8px;
+    border: 1px solid #43575b;
+    border-radius: 3px;
+    background: #1f2a2b;
+    color: #e8ebdf;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+    gap: 0;
+    width: 100%;
+    border-top: 1px solid rgba(105, 166, 187, 0.2);
+}
+
+.metric-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 82px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    overflow: hidden;
+    padding: 9px 12px;
+    border-right: 1px solid rgba(105, 166, 187, 0.15);
+    border-bottom: 1px solid rgba(105, 166, 187, 0.15);
+    background: #253030;
+    transition: background 140ms ease;
+}
+
+.metric-card::before {
+    display: none;
+}
+
+.metric-card:hover {
+    background: #2a3839;
+}
+
+.metric-label {
+    color: #98a087;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+}
+
+.metric-value {
+    overflow: hidden;
+    color: #f4f6e5;
+    font-size: clamp(16px, 1.7vw, 20px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.metric-note {
+    overflow: hidden;
+    color: #98a087;
+    font-size: 10px;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+    .filter-controls {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        align-items: flex-start;
+    }
+
+    .filter-controls select {
+        width: 100%;
+    }
+
+    .filter-label select {
+        flex: 0 0 130px;
+        width: 130px;
+    }
+
+    #cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0;
+    }
+
+    .metric-card {
+        min-height: 74px;
+        padding: 8px 9px;
+    }
+
+    .metric-value {
+        font-size: 15px;
+    }
+
+    .metric-note {
+        font-size: 9px;
+    }
 }

@@ -83,7 +83,7 @@ const ReturnInput = () => {
     };
 
     return (
-        <div id="expenseInput">
+        <div className="entryFormCard">
             <div className="eiHeader">
                 <div>
                     <div className="eiTitle">Add return c/s</div>

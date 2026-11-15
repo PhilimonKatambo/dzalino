@@ -174,6 +174,7 @@ const LedgerTable2 = ({
                                 </th>
                             ))}
                             <th className="aeNum">Balance</th>
+                            <th>Payment History</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -193,11 +194,23 @@ const LedgerTable2 = ({
                                         </td>
                                     ))}
                                     <td className="aeNum"><strong>{row.Amount - row.PaidAmount}</strong></td>
+                                    {
+                                        row.paymentHistory.length > 0 ?
+                                            <td>
+                                                <select className="aeStatusSelect">
+                                                    {
+                                                        row.paymentHistory.map((his, index) => (
+                                                            <option>{new Date(his.date).toLocaleDateString("en-GB") + ", K" + his.amount.toLocaleString()}</option>
+                                                        ))
+                                                    }
+                                                </select>
+                                            </td> : <td>Not paid once!</td>
+                                    }
                                     <td>
-                                        <button 
-                                            className="aeBtn" 
-                                            style={{ backgroundColor: row.Amount === row.PaidAmount ? "#6ac196" : "#69a6bb", color: "#f4f6e5" }} 
-                                            disabled={row.Amount === row.PaidAmount} 
+                                        <button
+                                            className="aeBtn"
+                                            style={{ backgroundColor: row.Amount === row.PaidAmount ? "#6ac196" : "#69a6bb", color: "#f4f6e5" }}
+                                            disabled={row.Amount === row.PaidAmount}
                                             onClick={() => {
                                                 setId(row._id);
                                                 setShowPay(true);
@@ -216,7 +229,7 @@ const LedgerTable2 = ({
             {showPay && (
                 <div style={{
                     position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: "rgba(0,0,0,0.7)", display: "flex", 
+                    backgroundColor: "rgba(0,0,0,0.7)", display: "flex",
                     justifyContent: "center", alignItems: "center", zIndex: 1000
                 }}>
                     <div style={{
@@ -228,8 +241,8 @@ const LedgerTable2 = ({
                             Enter the amount to be paid.
                         </p>
                         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                            <input 
-                                type="number" 
+                            <input
+                                type="number"
                                 placeholder="Amount paid"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
@@ -240,13 +253,13 @@ const LedgerTable2 = ({
                                 autoFocus
                             />
                             <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-                                <button 
+                                <button
                                     onClick={() => setShowPay(false)}
                                     className="aeBtn"
                                 >Cancel</button>
-                                <button 
+                                <button
                                     onClick={updateAmount}
-                                    className="aeBtn" 
+                                    className="aeBtn"
                                     style={{ backgroundColor: "#69a6bb", color: "#f4f6e5", borderColor: "#69a6bb" }}
                                 >Pay</button>
                             </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { authedPost } from "../auth/authedRequest";
+import { fetchBalances } from "../balancesSlice";
 import "./BalanceInput.css";
 
 const DEFAULT_FORM = {
@@ -74,6 +75,7 @@ const BalanceInput = () => {
 
             resetForm();
             setFeedback("Balance entry saved!");
+            dispatch(fetchBalances());
             setTimeout(() => setFeedback(""), 1000);
         } catch (err) {
             setError(err.message);
@@ -83,7 +85,7 @@ const BalanceInput = () => {
     };
 
     return (
-        <div id="expenseInput">
+        <div className="entryFormCard">
             <div className="eiHeader">
                 <div>
                     <div className="eiTitle">Add Balance Pay</div>

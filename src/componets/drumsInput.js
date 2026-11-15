@@ -73,7 +73,7 @@ const DrumsInput = () => {
     };
 
     return (
-        <div id="expenseInput">
+        <div className="entryFormCard">
             <div className="eiHeader">
                 <div>
                     <div className="eiTitle">Add drums given</div>

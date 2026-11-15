@@ -1,147 +1,173 @@
-#charts{
+#charts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
     width: 100%;
+    border-top: 1px solid rgba(105, 166, 187, 0.2);
+}
+
+.chartCard {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #253030;
+}
+
+.chartCard + .chartCard {
+    border-left: 1px solid rgba(105, 166, 187, 0.18);
+}
+
+.chartHeader {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 3px;
 }
 
-.chartCard{
-    background: linear-gradient(to right,#253030,#2a3839);
-    border-radius: 2px;
-    padding: 16px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.chartHeader{
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.chartTitle{
-    color: #69a6bb;
-    font-weight: 600;
-    font-size: .8rem;
-}
-
-.chartSubtitle{
-    color: #98a087;
-    font-size: 0.8rem;
-}
-
-.chartBody{
-    width: 100%;
-}
-
-.chartEmpty{
-    color: #98a087;
-    font-size: 0.9rem;
-    padding: 24px 4px;
-}
-
-.chartTooltip{
-    background: #1f2a2b;
-    border: 1px solid #3a4a4f;
-    border-radius: 5px;
-    padding: 8px 10px;
+.chartTitle {
     color: #f4f6e5;
-    font-size: 0.8rem;
+    font-size: 13px;
+    font-weight: 680;
+}
+
+.chartSubtitle {
+    color: #98a087;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.chartBody {
+    width: 100%;
+    min-width: 0;
+}
+
+.chartEmpty {
+    padding: 24px 0 8px;
+    color: #98a087;
+    font-size: 12px;
+}
+
+.chartTooltip {
     min-width: 180px;
+    padding: 10px 12px;
+    border: 1px solid #43575b;
+    border-radius: 9px;
+    background: #1f2a2b;
+    color: #f4f6e5;
+    font-size: 11px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
 }
 
-.chartTooltipLabel{
+.chartTooltipLabel {
+    margin-bottom: 7px;
     color: #69a6bb;
-    font-weight: 600;
-    margin-bottom: 6px;
+    font-weight: 700;
 }
 
-.chartTooltipRow{
+.chartTooltipRow {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin: 2px 0;
+    gap: 7px;
+    margin: 3px 0;
 }
 
-.chartTooltipSwatch{
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
+.chartTooltipSwatch {
     display: inline-block;
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    border-radius: 2px;
 }
 
-.chartTooltipName{
+.chartTooltipName {
     flex: 1;
     color: #f4f6e5;
 }
 
-.chartTooltipValue{
+.chartTooltipValue {
     color: #98a087;
     font-variant-numeric: tabular-nums;
 }
 
-.chartTooltipTotal{
-    margin-top: 6px;
-    padding-top: 6px;
+.chartTooltipTotal {
+    margin-top: 7px;
+    padding-top: 7px;
     border-top: 1px solid #3a4a4f;
     color: #69a6bb;
-    font-weight: 600;
+    font-weight: 700;
 }
 
-/* Two-tier X axis: day numbers on top, month label below.
-   The CSS class names are reused from the previous week-based
-   layout on purpose (chartAxisWeek / chartAxisMonth); they are
-   not literal anymore. */
-.chartAxisWrap{
+.chartAxisWrap {
     position: relative;
     width: 100%;
     height: 56px;
     margin-top: 2px;
 }
 
-.chartAxisWeek{
+.chartAxisWeek,
+.chartAxisMonth {
     position: absolute;
+    left: 0;
+    display: flex;
+    width: 100%;
+}
+
+.chartAxisWeek {
     top: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
 }
 
-.chartAxisMonth{
-    position: absolute;
+.chartAxisMonth {
     bottom: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
 }
 
-.chartAxisTick{
+.chartAxisTick {
     position: absolute;
     transform: translateX(-50%);
     color: #98a087;
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1;
     white-space: nowrap;
 }
 
-.chartAxisWeek .chartAxisTick{
+.chartAxisWeek .chartAxisTick {
     top: 0;
-    color: #98a087;
 }
 
-.chartAxisMonth .chartAxisTick{
+.chartAxisMonth .chartAxisTick {
     bottom: 0;
     color: #69a6bb;
-    font-weight: 600;
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 650;
 }
 
-.chartAxisDivider{
+.chartAxisDivider {
     position: absolute;
-    left: 0;
     right: 0;
     bottom: 18px;
+    left: 0;
     height: 1px;
     background: #3a4a4f;
+}
+
+@media (max-width: 900px) {
+    #charts {
+        grid-template-columns: 1fr;
+    }
+
+    .chartCard + .chartCard {
+        border-top: 1px solid rgba(105, 166, 187, 0.18);
+        border-left: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .chartCard {
+        padding: 9px 0;
+    }
+
+    .chartCard + .chartCard {
+        border-top: 1px solid rgba(105, 166, 187, 0.18);
+        border-left: 0;
+    }
 }

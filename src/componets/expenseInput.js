@@ -143,7 +143,7 @@ const ExpenseInput = () => {
     };
 
     return (
-        <div id="expenseInput">
+        <div className="entryFormCard">
             <div className="eiHeader">
                 <div>
                     <div className="eiTitle">Add an Expense</div>
