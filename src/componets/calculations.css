@@ -117,9 +117,22 @@
     }
 
     .calcuLeft {
-        padding: 9px 0;
+        padding: 12px 0;
         border-right: 0;
         border-bottom: 1px solid rgba(105, 166, 187, 0.18);
+    }
+
+    .calcuTt {
+        font-size: 14px;
+    }
+
+    .raww {
+        min-height: 36px;
+        font-size: 13px;
+    }
+
+    .calcuLeft .raww:last-child .totall {
+        font-size: 14px;
     }
 
     .calcuLeft:last-child {

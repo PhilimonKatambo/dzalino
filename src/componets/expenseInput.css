@@ -211,4 +211,23 @@
     .eiFieldWide{
         grid-column: span 1;
     }
+
+    .entryFormCard {
+        padding: 14px;
+    }
+
+    .eiField input,
+    .eiField select {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .eiToggle,
+    .eiBtn {
+        min-height: 44px;
+    }
+
+    .eiField label {
+        font-size: 0.8rem;
+    }
 }

@@ -227,8 +227,49 @@
         padding: 8px 7px;
     }
 
+    .aeTitle {
+        font-size: 15px;
+    }
+
+    .aeSubtitle {
+        font-size: 12px;
+    }
+
+    .aeField label {
+        font-size: 12px;
+    }
+
+    .aeField input,
+    .aeField select {
+        min-height: 42px;
+        font-size: 16px;
+    }
+
+    .aeTable {
+        font-size: 14px;
+    }
+
+    .aeTable th {
+        font-size: 12px;
+    }
+
+    .aeBadge {
+        font-size: 12px;
+    }
+
     .aePager {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .aePagerInfo,
+    .aePagerPage {
+        font-size: 13px;
+    }
+
+    .aeBtn,
+    .aeStatusSelect {
+        min-height: 40px;
+        font-size: 13px;
     }
 }

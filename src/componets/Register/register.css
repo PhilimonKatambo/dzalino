@@ -196,10 +196,39 @@
 
 @media (max-width: 480px) {
     .register-page {
-        padding: 16px;
+        padding: 12px;
     }
 
     .register-card {
-        padding: 26px 22px;
+        padding: 28px 22px;
+    }
+
+    .register-label {
+        font-size: 13px;
+    }
+
+    .register-input {
+        min-height: 46px;
+        font-size: 16px;
+    }
+
+    .register-error,
+    .register-hints {
+        font-size: 12px;
+    }
+
+    .register-form-error,
+    .register-form-success {
+        font-size: 13px;
+    }
+
+    .register-submit,
+    .register-toggle {
+        min-height: 44px;
+        font-size: 15px;
+    }
+
+    .register-switch {
+        font-size: 13px;
     }
 }

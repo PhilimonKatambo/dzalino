@@ -163,11 +163,32 @@
 
 @media (max-width: 560px) {
     .chartCard {
-        padding: 9px 0;
+        gap: 10px;
+        padding: 12px 0;
     }
 
     .chartCard + .chartCard {
         border-top: 1px solid rgba(105, 166, 187, 0.18);
         border-left: 0;
+    }
+
+    .chartTitle {
+        font-size: 15px;
+    }
+
+    .chartSubtitle {
+        font-size: 12px;
+    }
+
+    .chartEmpty {
+        font-size: 14px;
+    }
+
+    .chartAxisTick {
+        font-size: 11px;
+    }
+
+    .chartAxisMonth .chartAxisTick {
+        font-size: 12px;
     }
 }

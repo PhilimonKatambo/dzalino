@@ -186,10 +186,34 @@
 
 @media (max-width: 480px) {
     .login-page {
-        padding: 16px;
+        padding: 12px;
     }
 
     .login-card {
-        padding: 26px 22px;
+        padding: 28px 22px;
+    }
+
+    .login-label {
+        font-size: 13px;
+    }
+
+    .login-input {
+        min-height: 46px;
+        font-size: 16px;
+    }
+
+    .login-error,
+    .login-hints {
+        font-size: 12px;
+    }
+
+    .login-submit,
+    .login-toggle {
+        min-height: 44px;
+        font-size: 15px;
+    }
+
+    .login-switch {
+        font-size: 13px;
     }
 }

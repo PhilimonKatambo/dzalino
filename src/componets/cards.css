@@ -125,8 +125,18 @@
         align-items: flex-start;
     }
 
+    .filter-title {
+        font-size: 14px;
+    }
+
+    .filter-description {
+        font-size: 12px;
+    }
+
     .filter-controls select {
         width: 100%;
+        min-height: 44px;
+        font-size: 14px;
     }
 
     .filter-label select {
@@ -140,15 +150,19 @@
     }
 
     .metric-card {
-        min-height: 74px;
-        padding: 8px 9px;
+        min-height: 86px;
+        padding: 10px 11px;
+    }
+
+    .metric-label {
+        font-size: 12px;
     }
 
     .metric-value {
-        font-size: 15px;
+        font-size: 18px;
     }
 
     .metric-note {
-        font-size: 9px;
+        font-size: 11px;
     }
 }
