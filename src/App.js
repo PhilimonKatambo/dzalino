@@ -108,6 +108,7 @@ function Dashboard({ page }) {
                 </>
             )}
 
+
             {page === "transactions" && (
                 <section className="dashboard-section" aria-label="Transaction records">
                     <div id="downExp">
