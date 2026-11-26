@@ -16,6 +16,27 @@ const columns = [
 const AllBalances = () => {
     const balances = useSelector((state) => state.balances.balances);
 
+    const searchableBalances = useMemo(() => {
+        const list = Array.isArray(balances) ? balances : [];
+        return list.map((balance) => ({
+            ...balance,
+            paymentHistorySearch: Array.isArray(balance.paymentHistory)
+                ? balance.paymentHistory.map((payment) => {
+                    const date = payment?.date == null ? '' : String(payment.date);
+                    const parsedDate = payment?.date == null ? null : new Date(payment.date);
+                    const displayDate = parsedDate && !Number.isNaN(parsedDate.getTime())
+                        ? parsedDate.toLocaleDateString('en-GB')
+                        : '';
+                    const amount = payment?.amount == null ? '' : String(payment.amount);
+                    const displayAmount = payment?.amount == null
+                        ? ''
+                        : `K${Number(payment.amount).toLocaleString()}`;
+                    return `${displayDate} ${date} ${displayAmount} ${amount}`;
+                }).join(' ')
+                : ''
+        }));
+    }, [balances]);
+
     const totals = useMemo(() => {
         const list = Array.isArray(balances) ? balances : [];
         let sum = 0;
@@ -29,10 +50,10 @@ const AllBalances = () => {
 
     return (
         <LedgerTable2
-            rows={balances}
+            rows={searchableBalances}
             title='All Balances'
             subtitle='Every balance record from the backend'
-            searchFields={['Date', 'Amount', 'Qty', 'Debtor', 'Witness', 'Location', 'Status', '_id']}
+            searchFields={['Date', 'Amount', 'Qty', 'Debtor', 'Witness', 'Location', 'Status', '_id', 'paymentHistorySearch']}
             categoryField='Status'
             columns={columns}
             summary={[
